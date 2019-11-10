@@ -24,26 +24,45 @@
             border-collapse: collapse;
             padding: 2px;
         }
+        
+        .ip_col td div{
+            position: absolute;
+            display:none;
+            color: #ae029b;
+        }
+
+        .ip_col:hover td div{
+            display:initial;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div>
-        <a id="refresh" href="javascript:;">刷新</a>
+        <span style="display: block">当前系统时间:${nowDate}</span>
+        <span>每${timeInterval}秒重新扫描，立即</span>
+        <span><a id="refresh" href="javascript:;">刷新</a></span>
+        <span id="wait_refresh"></span>
     </div>
     <table>
         <thead>
         <tr>
             <th>IP</th>
             <th>STATUS</th>
-            <th>LAST_SCAN_TIME</th>
+            <th>LAST_SCANNED_TIME</th>
         </tr>
         </thead>
         <tbody>
         <#list ip_list as ip>
-            <tr>
+            <tr class="ip_col">
                 <td>${ip.IP} </td>
-                <td>${ip.STATUS} </td>
+                <#if (ip.STATUS=="0")>
+                    <td style="color: green" >Alive <div>在线</div></td>
+                <#elseif (ip.STATUS=="1")>
+                    <td style="color: red">Dead <div>离线</div></td>
+                <#else>
+                    <td style="color: red">${ip.STATUS} </td>
+                </#if>
                 <td>${ip.LAST_UP_TIME} </td>
             </tr>
         </#list>
@@ -54,8 +73,7 @@
 
 </body>
 <script type="application/javascript">
-    var refresh = document.getElementById("refresh")
-    refresh.onclick = function (ev) {
+    document.getElementById("refresh").onclick = function (ev) {
         xmlhttp = null;
         if (window.XMLHttpRequest) {
             xmlhttp = new XMLHttpRequest();
@@ -72,6 +90,7 @@
                     }
                 }
             };
+            document.getElementById("wait_refresh").innerText = "扫描中...";
 
         } else {
             alert("Your browser does not support XMLHTTP.");

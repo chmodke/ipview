@@ -7,6 +7,7 @@ import org.chmodke.ipview.common.core.DispatcherServlet;
 import org.chmodke.ipview.common.core.config.GlobalConfig;
 import org.chmodke.logo.Logo;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
@@ -35,13 +36,7 @@ public class Starter {
     public static void main(String[] args) {
         Logo.print();
 
-        int port = 8090;
-
-        try {
-            port = Integer.parseInt(GlobalConfig.getProperties("server.port", "8090"));
-        } catch (Exception e) {
-            logger.warn("Starter.main,get serverPort fail,use default serverPort");
-        }
+        int port = GlobalConfig.getInteger("server.port", 8090);
         logger.info(String.format("Starter.main,serverPort is:%s", port));
 
         try {
@@ -61,8 +56,11 @@ public class Starter {
             error.addErrorPage(ServletException.class, "/error");
             context.setErrorHandler(error);
 
+            ServerConnector connector = server.getBean(ServerConnector.class);
+            connector.setIdleTimeout(GlobalConfig.getInteger("server.timeout", 90000));
+
             server.start();
-            if (logger.isDebugEnabled() && Boolean.parseBoolean(GlobalConfig.getProperties("dumpStdErr")))
+            if (logger.isDebugEnabled() && GlobalConfig.getBoolean("dumpStdErr"))
                 server.dumpStdErr();
             server.join();
         } catch (Exception e) {

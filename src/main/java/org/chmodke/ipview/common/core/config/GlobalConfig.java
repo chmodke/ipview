@@ -47,6 +47,34 @@ public class GlobalConfig {
 
     }
 
+    public static int getInteger(String key) {
+        return getInteger(key, 0);
+        
+    }
+
+    public static int getInteger(String key, int def) {
+        try {
+            return Integer.parseInt(getProperties(key));
+        } catch (Exception e) {
+            logger.warn(String.format("get %s fail,use default value :%s", key, def));
+            return def;
+        }
+    }
+
+    public static boolean getBoolean(String key) {
+        return getBoolean(key, false);
+    }
+
+    public static boolean getBoolean(String key, boolean def) {
+        try {
+            return Boolean.parseBoolean(getProperties(key));
+        } catch (Exception e) {
+            logger.warn(String.format("get %s fail,use default value :%s", key, def));
+            return def;
+        }
+    }
+
+
     static {
 
         InputStream in = GlobalConfig.class.getClassLoader().getResourceAsStream("global.properties");

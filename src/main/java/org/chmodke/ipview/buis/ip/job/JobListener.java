@@ -28,26 +28,28 @@ import java.util.Timer;
 
 public class JobListener implements ServletContextListener {
     private static final Log logger = LogFactory.getLog(JobListener.class);
-    private static final int TIME_INTERVAL = 5 * 60 * 1000;
+    private static final int DEFAULT_TIME_INTERVAL = 5 * 60;//秒
+    private static int waitTime = 0;//秒
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        int waitTime = TIME_INTERVAL;
-        try {
-            waitTime = Integer.parseInt(GlobalConfig.getProperties("timeInterval", "5"));
-            waitTime = waitTime * 60 * 1000;
-        } catch (Exception e) {
-            logger.warn("JobListener.contextInitialized,get timeInterval fail,use default timeInterval");
+        waitTime = GlobalConfig.getInteger("timeInterval", 5) * 60;
+        if (waitTime <= 0) {
+            waitTime = DEFAULT_TIME_INTERVAL;
         }
         logger.info(String.format("JobListener.contextInitialized,timeInterval is:%sms", waitTime));
 
         Timer timer = new Timer();
         RefreshIpJob job = new RefreshIpJob();
-        timer.schedule(job, Calendar.getInstance().getTime(), waitTime);
+        timer.schedule(job, Calendar.getInstance().getTime(), waitTime * 1000);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
+    }
+
+    public static int getWaitTime() {
+        return waitTime;
     }
 }

@@ -2,6 +2,7 @@ package org.chmodke.ipview.buis;
 
 import org.chmodke.ipview.buis.ip.DB;
 import org.chmodke.ipview.buis.ip.STATUS;
+import org.chmodke.ipview.buis.ip.job.JobListener;
 import org.chmodke.ipview.buis.ip.job.RefreshIpJob;
 import org.chmodke.ipview.common.core.anno.Controller;
 import org.chmodke.ipview.common.core.anno.RequestMapping;
@@ -10,6 +11,7 @@ import org.chmodke.ipview.common.core.entity.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Calendar;
 
 /****************************************************************  
  * <p>Filename:    TestController.java 
@@ -59,6 +61,8 @@ public class WebController {
         if (STATUS.DB_STATUS_OK == STATUS.getDbStatus()) {
             mav = new ModelAndView("list.ftl");
             mav.addObject("ip_list", DB.getIpTable());
+            mav.addObject("timeInterval", JobListener.getWaitTime());
+            mav.addObject("nowDate", BuisConst.formatter.format(Calendar.getInstance().getTime()));
         } else {
             mav = new ModelAndView("refresh.ftl");
         }

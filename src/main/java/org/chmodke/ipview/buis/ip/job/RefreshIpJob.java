@@ -2,6 +2,7 @@ package org.chmodke.ipview.buis.ip.job;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chmodke.ipview.buis.BuisConst;
 import org.chmodke.ipview.buis.ip.DB;
 import org.chmodke.ipview.buis.ip.utils.IpV4Util;
 import org.chmodke.ipview.common.core.config.GlobalConfig;
@@ -9,7 +10,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -35,13 +35,12 @@ import java.util.TimerTask;
 public class RefreshIpJob extends TimerTask {
     private static final Log logger = LogFactory.getLog(RefreshIpJob.class);
 
-    private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void run() {
         try {
-            logger.info("RefreshIpJob execut date " + formatter.format(Calendar.getInstance().getTime()));
-            reFresh(GlobalConfig.getProperties("startIp"), Integer.parseInt(GlobalConfig.getProperties("scanLength")));
+            logger.info("RefreshIpJob execut date " + BuisConst.formatter.format(Calendar.getInstance().getTime()));
+            reFresh(GlobalConfig.getProperties("startIp"), GlobalConfig.getInteger("scanLength"));
         } catch (Exception e) {
             logger.error("RefreshIpJob.run->Exception:", e);
         }
@@ -62,19 +61,19 @@ public class RefreshIpJob extends TimerTask {
                 if (logger.isDebugEnabled())
                     logger.debug(String.format("send ping:%s", ipAddress));
                 InetAddress inet = InetAddress.getByName(ipAddress);
-                isAlive = inet.isReachable(1000);
+                isAlive = inet.isReachable(GlobalConfig.getInteger("pingTimeOut", 1000));
             } catch (IOException e) {
             }
             if (isAlive) {
-                ip.put("STATUS", "Alive");
+                ip.put("STATUS", BuisConst.STATUS_ALIVE);
                 if (logger.isDebugEnabled())
                     logger.debug(String.format("Address:%s is:%s", ipAddress, "Alive"));
             } else {
-                ip.put("STATUS", "Dead");
+                ip.put("STATUS", BuisConst.STATUS_DEAD);
                 if (logger.isDebugEnabled())
                     logger.debug(String.format("Address:%s is:%s", ipAddress, "Dead"));
             }
-            ip.put("LAST_UP_TIME", formatter.format(Calendar.getInstance().getTime()));
+            ip.put("LAST_UP_TIME", BuisConst.formatter.format(Calendar.getInstance().getTime()));
             ipTable.add(ip);
         }
 
