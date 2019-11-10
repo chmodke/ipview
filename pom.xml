@@ -23,7 +23,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.chmodke</groupId>
@@ -67,6 +66,16 @@
 
     <build>
         <finalName>ipview</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
         <resources>
             <resource>
                 <targetPath>${project.build.directory}/classes</targetPath>

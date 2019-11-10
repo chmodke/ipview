@@ -1,5 +1,8 @@
 package org.chmodke.ipview.buis;
 
+import org.chmodke.ipview.buis.ip.DB;
+import org.chmodke.ipview.buis.ip.STATUS;
+import org.chmodke.ipview.buis.ip.job.RefreshIpJob;
 import org.chmodke.ipview.common.core.anno.Controller;
 import org.chmodke.ipview.common.core.anno.RequestMapping;
 import org.chmodke.ipview.common.core.entity.ModelAndView;
@@ -26,11 +29,39 @@ import java.io.IOException;
  *******************************************************************/
 
 @Controller
-public class TestController {
-    @RequestMapping("/")
+public class WebController {
+
+    @RequestMapping("/index")
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mav = new ModelAndView("index.ftl");
-        mav.addObject("name", "欢迎进入首页!");   
+        mav.addObject("name", "欢迎访问!");
+        return mav;
+    }
+
+    @RequestMapping("/")
+    public ModelAndView root(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        return list(request, response);
+    }
+
+    @RequestMapping("/refresh")
+    public ModelAndView refresh(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mav = new ModelAndView("refresh.ftl");
+        if (STATUS.DB_STATUS_OK == STATUS.getDbStatus()) {
+            new RefreshIpJob().run();
+        }
+        return mav;
+    }
+
+
+    @RequestMapping("/list")
+    public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mav = null;
+        if (STATUS.DB_STATUS_OK == STATUS.getDbStatus()) {
+            mav = new ModelAndView("list.ftl");
+            mav.addObject("ip_list", DB.getIpTable());
+        } else {
+            mav = new ModelAndView("refresh.ftl");
+        }
         return mav;
     }
 
