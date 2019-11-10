@@ -5,12 +5,12 @@ import org.apache.commons.logging.LogFactory;
 import org.chmodke.ipview.buis.ip.job.JobListener;
 import org.chmodke.ipview.common.core.DispatcherServlet;
 import org.chmodke.ipview.common.core.config.GlobalConfig;
+import org.chmodke.logo.Logo;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import javax.servlet.ServletException;
-import java.net.URISyntaxException;
 
 /****************************************************************  
  * <p>Filename:    Start.java 
@@ -33,6 +33,7 @@ public class Starter {
     private static Log logger = LogFactory.getLog(Starter.class);
 
     public static void main(String[] args) {
+        Logo.print();
 
         int port = 8090;
 
@@ -64,10 +65,6 @@ public class Starter {
             if (logger.isDebugEnabled() && Boolean.parseBoolean(GlobalConfig.getProperties("dumpStdErr")))
                 server.dumpStdErr();
             server.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
