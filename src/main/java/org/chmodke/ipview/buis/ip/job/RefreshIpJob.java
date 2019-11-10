@@ -40,11 +40,9 @@ public class RefreshIpJob extends TimerTask {
     @Override
     public void run() {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("执行当前时间" + formatter.format(Calendar.getInstance().getTime()));
+            logger.info("RefreshIpJob execut date" + formatter.format(Calendar.getInstance().getTime()));
             reFresh(GlobalConfig.getProperties("startIp"), Integer.parseInt(GlobalConfig.getProperties("scanLength")));
         } catch (Exception e) {
-            logger.error("RefreshIpJob.run发生异常");
             logger.error("RefreshIpJob.run->Exception:", e);
         }
     }

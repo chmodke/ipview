@@ -39,7 +39,7 @@ public class JobListener implements ServletContextListener {
         } catch (Exception e) {
             logger.warn("JobListener.contextInitialized,get timeInterval fail,use default timeInterval");
         }
-        logger.info(String.format("JobListener.contextInitialized,timeInterval is:%s", waitTime));
+        logger.info(String.format("JobListener.contextInitialized,timeInterval is:%sms", waitTime));
 
         Timer timer = new Timer();
         RefreshIpJob job = new RefreshIpJob();
