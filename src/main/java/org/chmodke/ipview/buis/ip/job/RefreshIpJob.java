@@ -74,6 +74,7 @@ public class RefreshIpJob extends TimerTask {
                 if (logger.isDebugEnabled())
                     logger.debug(String.format("Address:%s is:%s", ipAddress, "Dead"));
             }
+            ip.put("LAST_UP_TIME", formatter.format(Calendar.getInstance().getTime()));
             ipTable.add(ip);
         }
 
