@@ -43,7 +43,6 @@ public class JobListener implements ServletContextListener {
 
         Timer timer = new Timer();
         RefreshIpJob job = new RefreshIpJob();
-        //安排指定的任务在指定的时间开始进行重复的固定延迟执行。
         timer.schedule(job, Calendar.getInstance().getTime(), waitTime);
     }
 

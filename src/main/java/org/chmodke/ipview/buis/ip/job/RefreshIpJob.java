@@ -40,7 +40,7 @@ public class RefreshIpJob extends TimerTask {
     @Override
     public void run() {
         try {
-            logger.info("RefreshIpJob execut date" + formatter.format(Calendar.getInstance().getTime()));
+            logger.info("RefreshIpJob execut date " + formatter.format(Calendar.getInstance().getTime()));
             reFresh(GlobalConfig.getProperties("startIp"), Integer.parseInt(GlobalConfig.getProperties("scanLength")));
         } catch (Exception e) {
             logger.error("RefreshIpJob.run->Exception:", e);
