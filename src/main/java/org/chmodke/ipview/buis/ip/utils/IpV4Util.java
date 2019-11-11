@@ -1,5 +1,8 @@
 package org.chmodke.ipview.buis.ip.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.security.InvalidParameterException;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
  *******************************************************************/
 
 public class IpV4Util {
+    private static final Log logger = LogFactory.getLog(IpV4Util.class);
     /**
      * ip对应的正则表达式
      */
@@ -81,21 +85,51 @@ public class IpV4Util {
         return result;
     }
 
-    public static boolean ping(String ipAddress, int timeout) throws IOException {
-        return InetAddress.getByName(ipAddress).isReachable(timeout);
+    public static boolean ping(String ipAddress, int timeout) {
+        if (logger.isDebugEnabled())
+            logger.debug(String.format("send ping to %s,timeout is %s", ipAddress, timeout));
+        try {
+            return InetAddress.getByName(ipAddress).isReachable(timeout) || pingCmd(ipAddress, timeout);
+        } catch (IOException e) {
+            return false;
+        }
     }
 
-    public static boolean ping(String ipAddress) throws IOException {
+    public static boolean ping(String ipAddress) {
         return ping(ipAddress, 1000);
     }
 
-    public static void main(String[] args) {
-        String ipAddress = "192.168.12.64";
-        int ipInt = toInt(ipAddress);
-        System.out.println(ipAddress + "=" + ipInt);
+    public static boolean pingCmd(String ipAddress, int timeout) {
+        if (logger.isDebugEnabled())
+            logger.debug(String.format("send ping to %s,timeout is %s", ipAddress, timeout));
+        String cmd = String.format("ping %s", ipAddress);
+        if (OSUtils.WINDOWS) {
+            //linux下-w单位是毫秒
+            cmd = String.format("ping -w %s -n 2 %s", timeout, ipAddress);
+        } else if (OSUtils.LINUX) {
+            if(timeout<1000){
+                timeout=1000;
+            }
+            //linux下-w单位是秒
+            cmd = String.format("ping -w %s -c 2 %s", timeout/1000, ipAddress);
+        }
+        try {
+            Process process = Runtime.getRuntime().exec(cmd);
+            int retVal = process.waitFor();
+            return retVal == 0 ? true : false;
+        } catch (IOException e) {
+            return false;
+        } catch (InterruptedException e) {
+            return false;
+        }
+    }
 
-        String ipAddress2 = toIpAddress(ipInt);
-        System.out.println(ipInt + "=" + ipAddress2);
+    public static boolean pingCmd(String ipAddress) {
+        return pingCmd(ipAddress, 1000);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(ping("10.135.125.103", 500));
     }
 }
 

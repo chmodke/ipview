@@ -9,7 +9,6 @@ import org.chmodke.ipview.common.core.config.GlobalConfig;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -56,14 +55,7 @@ public class RefreshIpJob extends TimerTask {
             HashMap<String, String> ip = new HashMap<String, String>();
             String ipAddress = IpV4Util.toIpAddress(start + i);
             ip.put(DB.IP_ADDRESS, ipAddress);
-            boolean isAlive = false;
-            try {
-                if (logger.isDebugEnabled())
-                    logger.debug(String.format("send ping:%s", ipAddress));
-                InetAddress inet = InetAddress.getByName(ipAddress);
-                isAlive = inet.isReachable(GlobalConfig.getInteger("pingTimeOut", 1000));
-            } catch (IOException e) {
-            }
+            boolean isAlive = IpV4Util.ping(ipAddress, GlobalConfig.getInteger("pingTimeOut", 1000));
             if (isAlive) {
                 ip.put("STATUS", BuisConst.STATUS_ALIVE);
                 if (logger.isDebugEnabled())
@@ -92,7 +84,7 @@ public class RefreshIpJob extends TimerTask {
 
     @Test
     public void test() {
-        int a = IpV4Util.toInt("192.168.100.100");
+        int a = IpV4Util.toInt("10.135.125.148");
         System.out.println(a);
         //a=a+200;
         System.out.println(IpV4Util.toIpAddress(a));
@@ -107,6 +99,6 @@ public class RefreshIpJob extends TimerTask {
 
     @Test
     public void test3() throws IOException {
-        System.out.println(IpV4Util.ping("www.baidu.com"));
+        System.out.println(IpV4Util.ping("10.135.125.94", 500));
     }
 }
