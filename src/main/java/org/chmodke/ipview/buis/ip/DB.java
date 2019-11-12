@@ -1,8 +1,14 @@
 package org.chmodke.ipview.buis.ip;
 
+import org.chmodke.ipview.buis.data.LRUHashMap;
 import org.chmodke.ipview.buis.exception.KeyIsNullException;
+import org.chmodke.ipview.buis.ip.utils.IpV4Util;
+import org.chmodke.ipview.common.core.config.GlobalConfig;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -26,8 +32,15 @@ import java.util.Iterator;
 public final class DB {
     public static final String IP_ADDRESS = "IP";
     private static ArrayList<HashMap<String, String>> ipTable = new ArrayList<HashMap<String, String>>();
+    private static LRUHashMap<String, InetAddress> ipCache = new LRUHashMap<String, InetAddress>(GlobalConfig.getInteger("scanLength", 64));
 
     public static ArrayList<HashMap<String, String>> getIpTable() {
+        ipTable.sort(new Comparator<HashMap<String, String>>() {
+            @Override
+            public int compare(HashMap<String, String> o1, HashMap<String, String> o2) {
+                return IpV4Util.toInt(o1.get(IP_ADDRESS)) - IpV4Util.toInt(o2.get(IP_ADDRESS));
+            }
+        });
         return ipTable;
     }
 
@@ -37,14 +50,19 @@ public final class DB {
         }
         synchronized (ipTable) {
             STATUS.setDbStatus(STATUS.DB_STATUS_UPD);
+            boolean contains = false;
             Iterator<HashMap<String, String>> it = ipTable.iterator();
             while (it.hasNext()) {
                 String ip = table.get(IP_ADDRESS);
                 if (ip != null && ip.equals(it.next().get(IP_ADDRESS))) {
                     it.remove();
                     ipTable.add(table);
+                    contains = true;
                     break;
                 }
+            }
+            if (!contains) {
+                ipTable.add(table);
             }
             STATUS.setDbStatus(STATUS.DB_STATUS_OK);
         }
@@ -62,5 +80,12 @@ public final class DB {
             STATUS.setDbStatus(STATUS.DB_STATUS_CLS);
             ipTable.clear();
         }
+    }
+
+    public static InetAddress getInetAddress(String ipAddress) throws UnknownHostException {
+        if (null == ipCache.get(ipAddress)) {
+            ipCache.put(ipAddress, InetAddress.getByName(ipAddress));
+        }
+        return ipCache.get(ipAddress);
     }
 }
