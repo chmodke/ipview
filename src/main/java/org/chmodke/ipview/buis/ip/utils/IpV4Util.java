@@ -2,9 +2,11 @@ package org.chmodke.ipview.buis.ip.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chmodke.ipview.buis.ip.DB;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -89,7 +91,7 @@ public class IpV4Util {
         if (logger.isDebugEnabled())
             logger.debug(String.format("send ping to %s,timeout is %s", ipAddress, timeout));
         try {
-            return InetAddress.getByName(ipAddress).isReachable(timeout) || pingCmd(ipAddress, timeout);
+            return DB.getInetAddress(ipAddress).isReachable(timeout) || pingCmd(ipAddress, timeout);
         } catch (IOException e) {
             return false;
         }
@@ -107,11 +109,11 @@ public class IpV4Util {
             //linux下-w单位是毫秒
             cmd = String.format("ping -w %s -n 2 %s", timeout, ipAddress);
         } else if (OSUtils.LINUX) {
-            if(timeout<1000){
-                timeout=1000;
+            if (timeout < 1000) {
+                timeout = 1000;
             }
             //linux下-w单位是秒
-            cmd = String.format("ping -w %s -c 2 %s", timeout/1000, ipAddress);
+            cmd = String.format("ping -w %s -c 2 %s", timeout / 1000, ipAddress);
         }
         try {
             Process process = Runtime.getRuntime().exec(cmd);
@@ -128,8 +130,34 @@ public class IpV4Util {
         return pingCmd(ipAddress, 1000);
     }
 
+    public static String getHostName(String ipAddress) {
+        if (logger.isDebugEnabled())
+            logger.debug(String.format("get hostname %s", ipAddress));
+        try {
+            InetAddress inet = DB.getInetAddress(ipAddress);
+            return inet.getHostName();
+        } catch (UnknownHostException e) {
+            return "UnknownHost";
+        }
+    }
+
     public static void main(String[] args) {
-        System.out.println(ping("10.135.125.103", 500));
+        System.out.println(ping("10.135.125.148", 500));
+        new Thread() {
+            @Override
+            public void run() {
+                System.out.println(getHostName("10.135.125.148"));
+                System.out.println(getHostName("10.135.125.148"));
+            }
+        }.start();
+        System.out.println(ping("10.135.125.150", 500));
+        new Thread() {
+            @Override
+            public void run() {
+                System.out.println(getHostName("10.135.125.150"));
+                System.out.println(getHostName("10.135.125.150"));
+            }
+        }.start();
     }
 }
 
