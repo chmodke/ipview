@@ -50,6 +50,7 @@
             <th>IP</th>
             <th>STATUS</th>
             <th>LAST_SCANNED_TIME</th>
+            <th>HOSTNAME</th>
         </tr>
         </thead>
         <tbody>
@@ -64,6 +65,7 @@
                     <td style="color: red">${ip.STATUS} </td>
                 </#if>
                 <td>${ip.LAST_UP_TIME} </td>
+                <td>${ip.HOSTNAME} </td>
             </tr>
         </#list>
         </tbody>
