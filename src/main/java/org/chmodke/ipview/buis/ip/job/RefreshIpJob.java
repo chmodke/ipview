@@ -66,11 +66,19 @@ public class RefreshIpJob extends TimerTask {
                     logger.debug(String.format("Address:%s is:%s", ipAddress, "Dead"));
             }
             ip.put("LAST_UP_TIME", BuisConst.formatter.format(Calendar.getInstance().getTime()));
+            ip.put("HOSTNAME", "N/A");
             ipTable.add(ip);
+            DB.updateIpTable(ip);
+            if (isAlive) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        String hostName = IpV4Util.getHostName(ip.get(DB.IP_ADDRESS));
+                        ip.put("HOSTNAME", hostName);
+                    }
+                }.start();
+            }
         }
-
-        DB.clearIpTable();
-        DB.updateIpTable(ipTable);
     }
 
     public static void reFresh(String startIp, String endIp) {
