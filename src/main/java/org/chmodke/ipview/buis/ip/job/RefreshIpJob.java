@@ -9,10 +9,13 @@ import org.chmodke.ipview.common.core.config.GlobalConfig;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /****************************************************************  
  * <p>Filename:    RefreshIpJob.java 
@@ -33,7 +36,15 @@ import java.util.TimerTask;
 
 public class RefreshIpJob extends TimerTask {
     private static final Log logger = LogFactory.getLog(RefreshIpJob.class);
+    private ThreadPoolExecutor executor = null;
 
+    public void init() {
+        int corePoolSize = Runtime.getRuntime().availableProcessors();
+        int poolSize = Runtime.getRuntime().availableProcessors() * 2;
+        BlockingQueue queue = new LinkedBlockingQueue(GlobalConfig.getInteger("scanLength"));
+        executor = new ThreadPoolExecutor(corePoolSize, poolSize, 1, TimeUnit.SECONDS, queue);
+        executor.allowCoreThreadTimeOut(true);
+    }
 
     @Override
     public void run() {
@@ -46,42 +57,17 @@ public class RefreshIpJob extends TimerTask {
     }
 
 
-    public static void reFresh(String startIp, int length) {
-
-        ArrayList<HashMap<String, String>> ipTable = new ArrayList<HashMap<String, String>>();
+    public void reFresh(String startIp, int length) {
         int start = IpV4Util.toInt(startIp);
-        for (int i = 0; i <= length; i++) {
 
-            HashMap<String, String> ip = new HashMap<String, String>();
+        for (int i = 0; i <= length; i++) {
             String ipAddress = IpV4Util.toIpAddress(start + i);
-            ip.put(DB.IP_ADDRESS, ipAddress);
-            boolean isAlive = IpV4Util.ping(ipAddress, GlobalConfig.getInteger("pingTimeOut", 1000));
-            if (isAlive) {
-                ip.put("STATUS", BuisConst.STATUS_ALIVE);
-                if (logger.isDebugEnabled())
-                    logger.debug(String.format("Address:%s is:%s", ipAddress, "Alive"));
-            } else {
-                ip.put("STATUS", BuisConst.STATUS_DEAD);
-                if (logger.isDebugEnabled())
-                    logger.debug(String.format("Address:%s is:%s", ipAddress, "Dead"));
-            }
-            ip.put("LAST_UP_TIME", BuisConst.formatter.format(Calendar.getInstance().getTime()));
-            ip.put("HOSTNAME", "N/A");
-            ipTable.add(ip);
-            DB.updateIpTable(ip);
-            if (isAlive) {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        String hostName = IpV4Util.getHostName(ip.get(DB.IP_ADDRESS));
-                        ip.put("HOSTNAME", hostName);
-                    }
-                }.start();
-            }
+            Scan scan = new Scan(ipAddress, GlobalConfig.getInteger("pingTimeOut", 1000));
+            executor.execute(scan);
         }
     }
 
-    public static void reFresh(String startIp, String endIp) {
+    public void reFresh(String startIp, String endIp) {
         int start = IpV4Util.toInt(startIp);
         int end = IpV4Util.toInt(endIp);
         int length = end - start;
@@ -108,5 +94,39 @@ public class RefreshIpJob extends TimerTask {
     @Test
     public void test3() throws IOException {
         System.out.println(IpV4Util.ping("10.135.125.94", 500));
+    }
+
+    class Scan implements Runnable {
+        private String ipAddress;
+        private int timeout;
+
+        Scan(String ipAddress) {
+            this.ipAddress = ipAddress;
+            this.timeout = 1000;
+        }
+
+        Scan(String ipAddress, int timeout) {
+            this.ipAddress = ipAddress;
+            this.timeout = timeout;
+        }
+
+        @Override
+        public void run() {
+            HashMap<String, String> ip = new HashMap<String, String>();
+            ip.put(DB.IP_ADDRESS, ipAddress);
+            ip.put("LAST_UP_TIME", BuisConst.formatter.format(Calendar.getInstance().getTime()));
+            if (IpV4Util.ping(ipAddress, timeout)) {
+                ip.put("STATUS", BuisConst.STATUS_ALIVE);
+                ip.put("HOSTNAME", IpV4Util.getHostName(ip.get(DB.IP_ADDRESS)));
+                if (logger.isDebugEnabled())
+                    logger.debug(String.format("Address:%s is:%s", ipAddress, "Alive"));
+            } else {
+                ip.put("STATUS", BuisConst.STATUS_DEAD);
+                ip.put("HOSTNAME", "N/A");
+                if (logger.isDebugEnabled())
+                    logger.debug(String.format("Address:%s is:%s", ipAddress, "Dead"));
+            }
+            DB.updateIpTable(ip);
+        }
     }
 }

@@ -141,13 +141,24 @@ public class IpV4Util {
         }
     }
 
+    public static String getCanonicalHostName(String ipAddress) {
+        if (logger.isDebugEnabled())
+            logger.debug(String.format("get hostname %s", ipAddress));
+        try {
+            InetAddress inet = DB.getInetAddress(ipAddress);
+            return inet.getCanonicalHostName();
+        } catch (UnknownHostException e) {
+            return "UnknownHost";
+        }
+    }
+
     public static void main(String[] args) {
         System.out.println(ping("10.135.125.148", 500));
         new Thread() {
             @Override
             public void run() {
                 System.out.println(getHostName("10.135.125.148"));
-                System.out.println(getHostName("10.135.125.148"));
+                System.out.println(getCanonicalHostName("10.135.125.148"));
             }
         }.start();
         System.out.println(ping("10.135.125.150", 500));
@@ -155,7 +166,7 @@ public class IpV4Util {
             @Override
             public void run() {
                 System.out.println(getHostName("10.135.125.150"));
-                System.out.println(getHostName("10.135.125.150"));
+                System.out.println(getCanonicalHostName("10.135.125.150"));
             }
         }.start();
     }
