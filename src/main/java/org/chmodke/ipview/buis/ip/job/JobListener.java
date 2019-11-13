@@ -40,8 +40,7 @@ public class JobListener implements ServletContextListener {
         logger.info(String.format("JobListener.contextInitialized,timeInterval is:%sms", waitTime));
 
         Timer timer = new Timer();
-        RefreshIpJob job = new RefreshIpJob();
-        job.init();
+        RefreshIpJob job = RefreshIpJob.getInstance();
         timer.schedule(job, Calendar.getInstance().getTime(), waitTime * 1000);
     }
 

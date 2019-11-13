@@ -49,7 +49,7 @@ public class WebController {
     public ModelAndView refresh(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mav = new ModelAndView("refresh.ftl");
         if (STATUS.DB_STATUS_OK == STATUS.getDbStatus()) {
-            new RefreshIpJob().run();
+            RefreshIpJob.getInstance().run();
         }
         return mav;
     }

@@ -36,6 +36,7 @@ public class STATUS {
 
     public synchronized static void setDbStatus(int dbStatus) {
         STATUS.dbStatus = dbStatus;
-        logger.info(String.format("STATUS.setDbStatus->dbStatus:%s", dbStatus));
+        if(logger.isDebugEnabled())
+            logger.debug(String.format("STATUS.setDbStatus->dbStatus:%s", dbStatus));
     }
 }

@@ -1,12 +1,8 @@
 package org.chmodke.ipview.buis.ip;
 
-import org.chmodke.ipview.buis.data.LRUHashMap;
 import org.chmodke.ipview.buis.exception.KeyIsNullException;
 import org.chmodke.ipview.buis.ip.utils.IpV4Util;
-import org.chmodke.ipview.common.core.config.GlobalConfig;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -32,7 +28,6 @@ import java.util.Iterator;
 public final class DB {
     public static final String IP_ADDRESS = "IP";
     private static ArrayList<HashMap<String, String>> ipTable = new ArrayList<HashMap<String, String>>();
-    private static LRUHashMap<String, InetAddress> ipCache = new LRUHashMap<String, InetAddress>(GlobalConfig.getInteger("scanLength", 64));
 
     public static ArrayList<HashMap<String, String>> getIpTable() {
         ipTable.sort(new Comparator<HashMap<String, String>>() {
@@ -80,12 +75,5 @@ public final class DB {
             STATUS.setDbStatus(STATUS.DB_STATUS_CLS);
             ipTable.clear();
         }
-    }
-
-    public static InetAddress getInetAddress(String ipAddress) throws UnknownHostException {
-        if (null == ipCache.get(ipAddress)) {
-            ipCache.put(ipAddress, InetAddress.getByName(ipAddress));
-        }
-        return ipCache.get(ipAddress);
     }
 }

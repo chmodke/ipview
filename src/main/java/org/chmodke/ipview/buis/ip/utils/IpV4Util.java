@@ -2,7 +2,6 @@ package org.chmodke.ipview.buis.ip.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chmodke.ipview.buis.ip.DB;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -91,7 +90,9 @@ public class IpV4Util {
         if (logger.isDebugEnabled())
             logger.debug(String.format("send ping to %s,timeout is %s", ipAddress, timeout));
         try {
-            return DB.getInetAddress(ipAddress).isReachable(timeout) || pingCmd(ipAddress, timeout);
+            InetAddress inet = InetAddress.getByName(ipAddress);
+            return (null != inet && inet.isReachable(timeout))
+                    || pingCmd(ipAddress, timeout);
         } catch (IOException e) {
             return false;
         }
@@ -102,22 +103,24 @@ public class IpV4Util {
     }
 
     public static boolean pingCmd(String ipAddress, int timeout) {
-        if (logger.isDebugEnabled())
-            logger.debug(String.format("send ping to %s,timeout is %s", ipAddress, timeout));
         String cmd = String.format("ping %s", ipAddress);
+        if (timeout < 1000) {
+            timeout = 1000;
+        }
         if (OSUtils.WINDOWS) {
-            //linux下-w单位是毫秒
-            cmd = String.format("ping -w %s -n 2 %s", timeout, ipAddress);
+            //windows下-w是每次接收响应包的超时，单位是毫秒，但是我觉得是秒，
+            cmd = String.format("ping -w %s -n 4 %s", 4 * timeout / 1000, ipAddress);
         } else if (OSUtils.LINUX) {
-            if (timeout < 1000) {
-                timeout = 1000;
-            }
-            //linux下-w单位是秒
-            cmd = String.format("ping -w %s -c 2 %s", timeout / 1000, ipAddress);
+            //linux下-w每次接收响应包的超时时间，单位是秒，
+            cmd = String.format("ping -w %s -c 4 %s", 4 * timeout / 1000, ipAddress);
         }
         try {
+            if (logger.isDebugEnabled())
+                logger.debug(String.format("IpV4Util.pingCmd->cmd:%s", cmd));
             Process process = Runtime.getRuntime().exec(cmd);
             int retVal = process.waitFor();
+            if (logger.isDebugEnabled())
+                logger.debug(String.format("IpV4Util.pingCmd->resp:%s", retVal));
             return retVal == 0 ? true : false;
         } catch (IOException e) {
             return false;
@@ -134,7 +137,7 @@ public class IpV4Util {
         if (logger.isDebugEnabled())
             logger.debug(String.format("get hostname %s", ipAddress));
         try {
-            InetAddress inet = DB.getInetAddress(ipAddress);
+            InetAddress inet = InetAddress.getByName(ipAddress);
             return inet.getHostName();
         } catch (UnknownHostException e) {
             return "UnknownHost";
@@ -145,30 +148,11 @@ public class IpV4Util {
         if (logger.isDebugEnabled())
             logger.debug(String.format("get hostname %s", ipAddress));
         try {
-            InetAddress inet = DB.getInetAddress(ipAddress);
+            InetAddress inet = InetAddress.getByName(ipAddress);
             return inet.getCanonicalHostName();
         } catch (UnknownHostException e) {
             return "UnknownHost";
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(ping("10.135.125.148", 500));
-        new Thread() {
-            @Override
-            public void run() {
-                System.out.println(getHostName("10.135.125.148"));
-                System.out.println(getCanonicalHostName("10.135.125.148"));
-            }
-        }.start();
-        System.out.println(ping("10.135.125.150", 500));
-        new Thread() {
-            @Override
-            public void run() {
-                System.out.println(getHostName("10.135.125.150"));
-                System.out.println(getCanonicalHostName("10.135.125.150"));
-            }
-        }.start();
     }
 }
 
