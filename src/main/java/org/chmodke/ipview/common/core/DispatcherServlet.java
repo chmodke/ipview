@@ -1,5 +1,6 @@
 package org.chmodke.ipview.common.core;
 
+import freemarker.log.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chmodke.ipview.common.core.config.GlobalConfig;
@@ -68,6 +69,7 @@ public class DispatcherServlet extends HttpServlet {
                     logger.info(String.format("scanted url  : %s # %s", t.getKey(), t.getValue().getUriMethod().getName()));
                 }
             }
+            System.setProperty(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY,Logger.LIBRARY_NAME_NONE);
             viewResolver = new FreemarkerViewResolver(defaultCharacterEncoding);
             logger.info(String.format("CharacterEncoding : %s", defaultCharacterEncoding));
             viewResolver.init(getServletContext().getResource(viewDirectory).toURI());
