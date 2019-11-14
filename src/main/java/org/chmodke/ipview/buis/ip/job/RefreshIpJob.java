@@ -10,10 +10,7 @@ import org.chmodke.ipview.common.core.config.GlobalConfig;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /****************************************************************  
  * <p>Filename:    RefreshIpJob.java 
@@ -46,11 +43,27 @@ public class RefreshIpJob extends TimerTask {
     }
 
     public void init() {
-        int corePoolSize = Runtime.getRuntime().availableProcessors();
-        int poolSize = Runtime.getRuntime().availableProcessors() * 2;
-        BlockingQueue queue = new LinkedBlockingQueue(GlobalConfig.getInteger("scanLength"));
-        executor = new ThreadPoolExecutor(corePoolSize, poolSize, 1, TimeUnit.SECONDS, queue);
-        executor.allowCoreThreadTimeOut(true);
+        int coreSize = Runtime.getRuntime().availableProcessors();
+        int threadLength = GlobalConfig.getInteger("scanLength");
+
+        //int poolSize = (int) Math.floor((0.5 + 1.5) / 0.1 * coreSize);
+        int poolSize = (int) Math.floor(threadLength / coreSize);
+        int corePoolSize = poolSize / 2;
+
+        int t = threadLength - corePoolSize - (poolSize - corePoolSize);
+        BlockingQueue queue = new LinkedBlockingQueue(threadLength - poolSize);
+        RejectedExecutionHandler handler = new RejectedExecutionHandler() {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                logger.error(String.format("线程溢出 %s", r.toString()));
+            }
+        };
+        //corePoolSize 核心线程数量
+        //poolSize 线程池最大容量
+        //queue 核心线程阻塞队列，只服务于核心线程
+        //当提交的线程数量总和 - 已执行过的线程 - 核心线程数量 - 阻塞队列长度 > 线程池最大容量时会发生队列溢出
+        executor = new ThreadPoolExecutor(corePoolSize, poolSize, 0, TimeUnit.SECONDS, queue, handler);
+        //executor.allowCoreThreadTimeOut(true);
     }
 
     @Override
@@ -109,6 +122,11 @@ public class RefreshIpJob extends TimerTask {
                 ip.put("HOSTNAME", "N/A");
             }
             DB.updateIpTable(ip);
+        }
+
+        @Override
+        public String toString() {
+            return "Scan" + this.ipAddress;
         }
     }
 }
