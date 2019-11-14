@@ -51,7 +51,7 @@ public class RefreshIpJob extends TimerTask {
         int corePoolSize = poolSize / 2;
 
         int t = threadLength - corePoolSize - (poolSize - corePoolSize);
-        BlockingQueue queue = new LinkedBlockingQueue(threadLength - poolSize);
+        BlockingQueue queue = new LinkedBlockingQueue(threadLength - poolSize + 1);
         RejectedExecutionHandler handler = new RejectedExecutionHandler() {
             @Override
             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
