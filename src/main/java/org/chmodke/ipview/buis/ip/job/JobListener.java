@@ -41,6 +41,7 @@ public class JobListener implements ServletContextListener {
 
         Timer timer = new Timer();
         RefreshIpJob job = RefreshIpJob.getInstance();
+        job.init();
         timer.schedule(job, Calendar.getInstance().getTime(), waitTime * 1000);
     }
 
