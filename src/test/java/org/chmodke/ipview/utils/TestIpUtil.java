@@ -40,6 +40,7 @@ public class TestIpUtil {
         IpV4Util.ping("10.135.125.94", 500);
     }
 
+    @Test
     public void test4() {
         IpV4Util.pingCmd("192.168.100.96", 500);
         new Thread() {
@@ -104,5 +105,11 @@ public class TestIpUtil {
 
         //算出一个线程中，cpu时间（x）占整个线程工作时间（x+y）的比率（x/（x+y）），然后N核服务器为了N核都跑满100%那么就用N除以这个比率，最后加上1
         //N*((x+y)/x)+1
+    }
+
+    @Test
+    public void test6() {
+        System.out.println(IpV4Util.getHostName("192.168.100.1"));
+        System.out.println(IpV4Util.getHostNameCmd("192.168.100.1"));
     }
 }

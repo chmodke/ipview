@@ -1,13 +1,17 @@
 package org.chmodke.ipview.buis.ip.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -103,24 +107,26 @@ public class IpV4Util {
     }
 
     public static boolean pingCmd(String ipAddress, int timeout) {
-        String cmd = String.format("ping %s", ipAddress);
+        String[] cmdCfg = null;
         if (timeout < 1000) {
             timeout = 1000;
         }
         if (OSUtils.WINDOWS) {
             //windows下-w是每次接收响应包的超时，单位是毫秒，但是我觉得是秒，
-            cmd = String.format("ping -w %s -n 4 %s", 4 * timeout / 1000, ipAddress);
+            String cmd = String.format("ping -w %s -n 4 %s", 4 * timeout / 1000, ipAddress);
+            cmdCfg = new String[]{"cmd", "/c", cmd};
         } else if (OSUtils.LINUX) {
             //linux下-w每次接收响应包的超时时间，单位是秒，
-            cmd = String.format("ping -w %s -c 4 %s", 4 * timeout / 1000, ipAddress);
+            String cmd = String.format("ping -w %s -c 4 %s", 4 * timeout / 1000, ipAddress);
+            cmdCfg = new String[]{"/bin/bash", "-c", cmd};
         }
         try {
             if (logger.isDebugEnabled())
-                logger.debug(String.format("IpV4Util.pingCmd->cmd:%s", cmd));
-            Process process = Runtime.getRuntime().exec(cmd);
+                logger.debug(String.format("IpV4Util.pingCmd->cmd:%s", cmdCfg[2]));
+            Process process = Runtime.getRuntime().exec(cmdCfg);
             int retVal = process.waitFor();
             if (logger.isDebugEnabled())
-                logger.debug(String.format("IpV4Util.pingCmd->resp:%s", retVal));
+                logger.debug(String.format("IpV4Util.pingCmd resp->ip %s: retVal:%s", ipAddress, retVal));
             return retVal == 0 ? true : false;
         } catch (IOException e) {
             return false;
@@ -138,7 +144,11 @@ public class IpV4Util {
             logger.debug(String.format("get hostname %s", ipAddress));
         try {
             InetAddress inet = InetAddress.getByName(ipAddress);
-            return inet.getHostName();
+            String hostname = inet.getHostName();
+            if (StringUtils.equals(hostname, ipAddress)) {
+                hostname = getHostNameCmd(ipAddress);
+            }
+            return hostname;
         } catch (UnknownHostException e) {
             return "UnknownHost";
         }
@@ -153,6 +163,61 @@ public class IpV4Util {
         } catch (UnknownHostException e) {
             return "UnknownHost";
         }
+    }
+
+    public static String getHostNameCmd(String ipAddress) {
+        if (logger.isDebugEnabled())
+            logger.debug(String.format("get hostname cmd %s", ipAddress));
+        String hostname = "UnknownHost";
+        String[] cmdCfg = null;
+
+        if (OSUtils.WINDOWS) {
+            String cmd = String.format("nbtstat -A %s | findstr 唯一| findstr 00", ipAddress);
+            cmdCfg = new String[]{"cmd", "/c", cmd};
+        } else if (OSUtils.LINUX) {
+            String cmd = String.format("nmblookup -A %s | grep '<00' | grep -v GROUP | awk '{print $1}'", ipAddress);
+            cmdCfg = new String[]{"/bin/bash", "-c", cmd};
+        } else {
+            return hostname;
+        }
+
+        BufferedReader bufferedreader = null;
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug(String.format("IpV4Util.getHostNameCmd->cmd:%s", cmdCfg[2]));
+            Process process = Runtime.getRuntime().exec(cmdCfg, null);
+            process.waitFor(5, TimeUnit.SECONDS);
+            bufferedreader = new BufferedReader(new InputStreamReader(process.getInputStream(), OSUtils.osCharset));
+            if (null != bufferedreader) {
+                if (OSUtils.WINDOWS) {
+                    for (String line = bufferedreader.readLine(); StringUtils.isNotBlank(line); line = bufferedreader.readLine()) {
+                        hostname = (line.substring(0, (line.indexOf("<00>")))).trim();//截取字符串
+                    }
+                } else if (OSUtils.LINUX) {
+                    String line = bufferedreader.readLine();
+                    if (StringUtils.isNotBlank(line)) {
+                        hostname = line.trim();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            logger.warn(String.format("get host :%s timeout", ipAddress));
+        } catch (InterruptedException e) {
+            //不会发生
+        } catch (Exception e) {
+            logger.error(String.format("IpV4Util.getHostNameCmd->ip: %s Exception:%s", ipAddress, e));
+        } finally {
+            try {
+                if (null != bufferedreader) {
+                    bufferedreader.close();
+                }
+            } catch (IOException e) {
+                logger.error(String.format("close bufferedreader fail :s", ipAddress));
+            }
+        }
+        if (logger.isDebugEnabled())
+            logger.debug(String.format("IpV4Util.getHostNameCmd resp->ip %s: hostname:%s", ipAddress, hostname));
+        return hostname;
     }
 }
 
