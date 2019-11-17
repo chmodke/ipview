@@ -1,5 +1,6 @@
 package org.chmodke.ipview.common.core.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,7 +42,7 @@ public class GlobalConfig {
     }
 
     public static String getProperties(String key, String def) {
-        if (null != global && null != global.getProperty(key))
+        if (null != global && StringUtils.isNotBlank(global.getProperty(key)))
             return global.getProperty(key);
         return def;
 
@@ -49,7 +50,7 @@ public class GlobalConfig {
 
     public static int getInteger(String key) {
         return getInteger(key, 0);
-        
+
     }
 
     public static int getInteger(String key, int def) {
