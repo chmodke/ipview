@@ -1,5 +1,6 @@
 package org.chmodke.ipview.common.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.log.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,10 +107,18 @@ public class DispatcherServlet extends HttpServlet {
             Object mavObject = uriInfo.getUriMethod().invoke(controllersMap.get(uriInfo.getControllerId()), req, resp);
             if (mavObject != null) {
                 if (mavObject instanceof ModelAndView) {
+                    resp.addHeader("Content-Type", "text/html;charset=utf-8");
                     viewResolver.resolver((ModelAndView) mavObject, resp);
                     return;
                 } else if (mavObject instanceof String) {
+                    resp.addHeader("Content-Type", "text/plain;charset=utf-8");
                     resp.getWriter().write((String) mavObject);
+                    return;
+                } else {
+                    ObjectMapper mapper = new ObjectMapper();
+                    String json = mapper.writeValueAsString(mavObject);
+                    resp.getWriter().write(json);
+                    resp.addHeader("Content-Type", "application/json;charset=utf-8");
                     return;
                 }
             }

@@ -60,6 +60,8 @@ public class Starter {
 
             //DispatcherServlet
             context.addServlet(DispatcherServlet.class, "/");
+
+            //EventListener
             context.addEventListener(new JobListener());
 
             server.setHandler(context);
