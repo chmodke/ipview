@@ -12,7 +12,7 @@ import static java.lang.annotation.ElementType.TYPE;
  * 标记url
  *
  * @author kehao
- * @email kehao@asiainfo.com
+ * @email kehao1158115@outlok.com
  * @date 2019/10/20 23:20
  */
 @Target({TYPE, METHOD})
@@ -24,7 +24,7 @@ public @interface RequestMapping {
      *
      * @return
      * @author kehao
-     * @email kehao@asiainfo.com
+     * @email kehao1158115@outlok.com
      * @date 2019/10/20 23:20
      */
     String value() default "";

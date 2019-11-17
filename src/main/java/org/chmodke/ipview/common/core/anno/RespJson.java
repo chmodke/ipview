@@ -5,19 +5,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.TYPE;
-
+import static java.lang.annotation.ElementType.METHOD;
 
 /**
- * 标记控制器
+ * 标记Josn响应
  *
  * @author kehao
  * @email kehao1158115@outlok.com
- * @date 2019/10/20 23:18
+ * @date 2019/10/20 23:20
  */
-@Target(TYPE)
+@Target(METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Controller {
-
+public @interface RespJson {
 }

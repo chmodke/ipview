@@ -41,7 +41,7 @@ public class ReflexUtils {
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @author kehao
-     * @email kehao@asiainfo.com
+     * @email kehao1158115@outlok.com
      * @date 2019/10/20 23:26
      */
     public static Map<String, Object> analysisController(String packageName) throws URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -72,7 +72,7 @@ public class ReflexUtils {
      * @param controllersMap
      * @return
      * @author kehao
-     * @email kehao@asiainfo.com
+     * @email kehao1158115@outlok.com
      * @date 2019/10/20 23:26
      */
     public static Map<String, URIInfo> analysisURIByController(Map<String, Object> controllersMap) {

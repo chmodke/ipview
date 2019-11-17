@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.chmodke.ipview.common.core.anno.Controller;
 import org.chmodke.ipview.common.core.anno.RequestMapping;
+import org.chmodke.ipview.common.core.anno.RespJson;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,11 +40,13 @@ public class ApiController {
     }
 
     @RequestMapping("/getJson")
+    @RespJson
     public List getJson(HttpServletRequest request, HttpServletResponse response) {
         return Arrays.asList(1, 2, 3);
     }
 
     @RequestMapping("/getPerson")
+    @RespJson
     public Person getPerson(HttpServletRequest request, HttpServletResponse response) {
         return new Person("qwe", "23");
     }

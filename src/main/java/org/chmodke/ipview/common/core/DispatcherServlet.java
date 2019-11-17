@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.log.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chmodke.ipview.common.core.anno.RespJson;
 import org.chmodke.ipview.common.core.config.GlobalConfig;
 import org.chmodke.ipview.common.core.entity.ModelAndView;
 import org.chmodke.ipview.common.core.entity.URIInfo;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -104,8 +107,17 @@ public class DispatcherServlet extends HttpServlet {
         }
 
         try {
-            Object mavObject = uriInfo.getUriMethod().invoke(controllersMap.get(uriInfo.getControllerId()), req, resp);
+            Method method = uriInfo.getUriMethod();
+            Object mavObject = method.invoke(controllersMap.get(uriInfo.getControllerId()), req, resp);
             if (mavObject != null) {
+                Annotation annotation = method.getAnnotation(RespJson.class);
+                if (null != annotation) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    String json = mapper.writeValueAsString(mavObject);
+                    resp.getWriter().write(json);
+                    resp.addHeader("Content-Type", "application/json;charset=utf-8");
+                    return;
+                }
                 if (mavObject instanceof ModelAndView) {
                     resp.addHeader("Content-Type", "text/html;charset=utf-8");
                     viewResolver.resolver((ModelAndView) mavObject, resp);
@@ -115,10 +127,8 @@ public class DispatcherServlet extends HttpServlet {
                     resp.getWriter().write((String) mavObject);
                     return;
                 } else {
-                    ObjectMapper mapper = new ObjectMapper();
-                    String json = mapper.writeValueAsString(mavObject);
-                    resp.getWriter().write(json);
-                    resp.addHeader("Content-Type", "application/json;charset=utf-8");
+                    resp.addHeader("Content-Type", "text/plain;charset=utf-8");
+                    resp.getWriter().write((String) mavObject);
                     return;
                 }
             }

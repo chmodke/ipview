@@ -48,7 +48,7 @@ public class FreemarkerViewResolver {
      * @param viewDirectory
      * @throws IOException
      * @author kehao
-     * @email kehao@asiainfo.com
+     * @email kehao1158115@outlok.com
      * @date 2019/10/20 23:41
      */
     public void init(URI viewDirectory) throws IOException {
@@ -67,7 +67,7 @@ public class FreemarkerViewResolver {
      * @throws IOException
      * @throws TemplateException
      * @author kehao
-     * @email kehao@asiainfo.com
+     * @email kehao1158115@outlok.com
      * @date 2019/10/20 23:41
      */
     public void resolver(ModelAndView mav, HttpServletResponse response) throws ParseException, IOException, TemplateException {
