@@ -3,11 +3,11 @@
 <head>
     <title>首页</title>
     <meta charset="utf-8"/>
-    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="/favicon.ico" rel="icon" type="image/x-icon"/>
     <style>
 
         .container {
-            width: 800px;
+            width: 600px;
             margin: 20px auto 0 auto;
         }
 
@@ -25,25 +25,30 @@
             border-collapse: collapse;
             padding: 2px;
         }
-        
-        .ip_col td div{
+
+        .ip_col td div {
             position: absolute;
-            display:none;
+            display: none;
             color: #ae029b;
         }
 
-        .ip_col:hover td div{
-            display:initial;
+        .ip_col:hover td div {
+            display: initial;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div>
-        <span style="display: block">当前系统时间:${nowDate}</span>
-        <span>每${timeInterval}秒重新扫描，立即</span>
-        <span><a id="refresh" href="javascript:;">刷新</a></span>
-        <span id="wait_refresh"></span>
+        <div>
+            <span>当前系统时间:${nowDate}</span>
+            <span style="float: right"><a href="/about.html"><b>about</b></a></span>
+        </div>
+        <div>
+            <span>每${timeInterval}秒重新扫描，立即</span>
+            <span><a id="refresh" href="javascript:;">刷新</a></span>
+            <span id="wait_refresh"></span>
+        </div>
     </div>
     <table>
         <thead>
@@ -59,9 +64,13 @@
             <tr class="ip_col">
                 <td>${ip.IP} </td>
                 <#if (ip.STATUS=="0")>
-                    <td style="color: green" >Alive <div>在线</div></td>
+                    <td style="color: green">Alive
+                        <div>在线</div>
+                    </td>
                 <#elseif (ip.STATUS=="1")>
-                    <td style="color: red">Dead <div>离线</div></td>
+                    <td style="color: red">Dead
+                        <div>离线</div>
+                    </td>
                 <#else>
                     <td style="color: red">${ip.STATUS} </td>
                 </#if>

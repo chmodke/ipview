@@ -10,7 +10,8 @@ import org.chmodke.ipview.common.core.entity.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.Calendar;
 
 /****************************************************************  
@@ -67,6 +68,32 @@ public class WebController {
             mav = new ModelAndView("refresh.ftl");
         }
         return mav;
+    }
+
+    @RequestMapping("/getmd")
+    public String getmd(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String mdid = request.getParameter("mdid");
+        StringBuffer mdContext = new StringBuffer();
+        URL mdPath = WebController.class.getClassLoader().getResource("META-INF/resources/md/" + mdid);
+        File mdFile = new File(mdPath.getPath());
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(mdFile), "UTF-8"));
+        int len = 0;
+        String line = null;
+        try {
+            while ((line = in.readLine()) != null) {
+                if (len != 0) {// 处理换行符的问题
+                    mdContext.append("\r\n" + line);
+                } else {
+                    mdContext.append(line);
+                }
+                len++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            in.close();
+        }
+        return mdContext.toString();
     }
 
     @RequestMapping("/error")
