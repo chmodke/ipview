@@ -3,6 +3,7 @@
 <head>
     <title>首页</title>
     <meta charset="utf-8"/>
+    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
 </head>
 <body>
 <h1>数据准备中，请稍候...</h1>
