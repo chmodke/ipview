@@ -172,10 +172,10 @@ public class IpV4Util {
         String[] cmdCfg = null;
 
         if (OSUtils.WINDOWS) {
-            String cmd = String.format("nbtstat -A %s | findstr 唯一| findstr 00", ipAddress);
+            String cmd = String.format("nbtstat -A %s | findstr 唯一| findstr \"<00>\"", ipAddress);
             cmdCfg = new String[]{"cmd", "/c", cmd};
         } else if (OSUtils.LINUX) {
-            String cmd = String.format("nmblookup -A %s | grep '<00' | grep -v GROUP | awk '{print $1}'", ipAddress);
+            String cmd = String.format("nmblookup -A %s | grep '<00>' | grep -v GROUP | awk '{print $1}'", ipAddress);
             cmdCfg = new String[]{"/bin/bash", "-c", cmd};
         } else {
             return hostname;
