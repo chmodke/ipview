@@ -1,5 +1,7 @@
 .metadata
 .settings
 /.metadata/
+/.idea/
+/.git/
 target
 /logs/
