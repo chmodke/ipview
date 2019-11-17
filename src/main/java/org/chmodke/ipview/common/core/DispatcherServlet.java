@@ -69,7 +69,7 @@ public class DispatcherServlet extends HttpServlet {
                     logger.info(String.format("scanted url  : %s # %s", t.getKey(), t.getValue().getUriMethod().getName()));
                 }
             }
-            System.setProperty(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY,Logger.LIBRARY_NAME_NONE);
+            System.setProperty(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY, Logger.LIBRARY_NAME_NONE);
             viewResolver = new FreemarkerViewResolver(defaultCharacterEncoding);
             logger.info(String.format("CharacterEncoding : %s", defaultCharacterEncoding));
             viewResolver.init(getServletContext().getResource(viewDirectory).toURI());
@@ -88,6 +88,8 @@ public class DispatcherServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding(defaultCharacterEncoding);
         resp.setCharacterEncoding(defaultCharacterEncoding);
+        if (logger.isDebugEnabled())
+            logger.debug(String.format("DispatcherServlet.url->:%s", req.getRequestURI() + "?" + req.getQueryString()));
         String uri = req.getRequestURI().replace(req.getServletContext().getContextPath(), "");
         URIInfo uriInfo = uriInfosMap.get(uri);
 
@@ -103,8 +105,13 @@ public class DispatcherServlet extends HttpServlet {
         try {
             Object mavObject = uriInfo.getUriMethod().invoke(controllersMap.get(uriInfo.getControllerId()), req, resp);
             if (mavObject != null) {
-                viewResolver.resolver((ModelAndView) mavObject, resp);
-                return;
+                if (mavObject instanceof ModelAndView) {
+                    viewResolver.resolver((ModelAndView) mavObject, resp);
+                    return;
+                } else if (mavObject instanceof String) {
+                    resp.getWriter().write((String) mavObject);
+                    return;
+                }
             }
         } catch (Exception e) {
             //处理最外层捕捉错误，并抛到前台
