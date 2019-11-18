@@ -3,7 +3,7 @@
 <head>
     <title>首页</title>
     <meta charset="utf-8"/>
-    <link href="/favicon.ico" rel="icon" type="image/x-icon"/>
+    <link href="favicon.ico" rel="icon" type="image/x-icon"/>
     <style>
 
         .container {
@@ -42,7 +42,7 @@
     <div>
         <div>
             <span>当前系统时间:${nowDate}</span>
-            <span style="float: right"><a href="/about.html"><b>about</b></a></span>
+            <span style="float: right"><a href="about.html"><b>about</b></a></span>
         </div>
         <div>
             <span>每${timeInterval}秒重新扫描，立即</span>

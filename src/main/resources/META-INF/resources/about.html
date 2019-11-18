@@ -4,8 +4,8 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width initial-scale=1'>
     <title>About</title>
-    <link href="/favicon.ico" rel="icon" type="image/x-icon"/>
-    <script type="application/javascript" src="/static/script/showdown.min.js"></script>
+    <link href="favicon.ico" rel="icon" type="image/x-icon"/>
+    <script type="application/javascript" src="static/script/showdown.min.js"></script>
     <!--MarkDown基础样式表-->
     <style>
         body {
@@ -51,7 +51,7 @@
             xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
         }
         if (xmlhttp != null) {
-            xmlhttp.open("GET", "/getmd?mdid=about.md", true);
+            xmlhttp.open("GET", "getmd?mdid=about.md", true);
             xmlhttp.send(null);
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4) {

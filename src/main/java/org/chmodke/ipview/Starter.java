@@ -45,7 +45,7 @@ public class Starter {
             Server server = new Server(port);
 
             ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-            context.setContextPath("/");
+            context.setContextPath("/ipview");
             context.setResourceBase(Starter.class.getClassLoader().getResource("META-INF/resources").toURI().toString());
 
             //DefaultServlet
