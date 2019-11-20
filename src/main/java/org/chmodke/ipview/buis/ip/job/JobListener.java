@@ -6,7 +6,7 @@ import org.chmodke.ipview.common.core.config.GlobalConfig;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 
 /****************************************************************  
@@ -42,7 +42,7 @@ public class JobListener implements ServletContextListener {
         Timer timer = new Timer();
         RefreshIpJob job = RefreshIpJob.getInstance();
         job.init();
-        timer.schedule(job, Calendar.getInstance().getTime(), waitTime * 1000);
+        timer.schedule(job, new Date(), waitTime * 1000);
     }
 
     @Override

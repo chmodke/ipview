@@ -2,11 +2,10 @@ package org.chmodke.ipview.buis.ip.job;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chmodke.ipview.buis.BuisConst;
 import org.chmodke.ipview.buis.ip.utils.IpV4Util;
 import org.chmodke.ipview.common.core.config.GlobalConfig;
 
-import java.util.Calendar;
+import java.text.DateFormat;
 import java.util.TimerTask;
 import java.util.concurrent.*;
 
@@ -65,7 +64,7 @@ public class RefreshIpJob extends TimerTask {
     @Override
     public void run() {
         try {
-            logger.info("RefreshIpJob execut date " + BuisConst.formatter.format(Calendar.getInstance().getTime()));
+            logger.info("RefreshIpJob execut date " + DateFormat.getDateTimeInstance().format(System.currentTimeMillis()));
             reFresh(GlobalConfig.getProperties("startIp"), GlobalConfig.getInteger("scanLength"));
         } catch (Exception e) {
             logger.error("RefreshIpJob.run->Exception:", e);
