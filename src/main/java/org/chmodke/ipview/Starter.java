@@ -39,7 +39,15 @@ public class Starter {
         Logo.print();
 
         int port = GlobalConfig.getInteger("server.port", 8090);
-        logger.info(String.format("Starter.main,serverPort is:%s", port));
+        String serverPort = System.getProperty("server.port");
+        if (StringUtils.isNotBlank(serverPort)) {
+            try {
+                port = Integer.parseInt(serverPort);
+            } catch (NumberFormatException e) {
+                logger.warn(String.format("Starter.main,VM Option [server.port=%s] illegal.", serverPort));
+            }
+        }
+        logger.info(String.format("Starter.main,serverPort use:%s.", port));
 
         try {
             Server server = new Server(port);
