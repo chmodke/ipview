@@ -1,5 +1,6 @@
 package org.chmodke.ipview.buis.ip;
 
+import org.apache.commons.lang3.StringUtils;
 import org.chmodke.ipview.buis.exception.KeyIsNullException;
 import org.chmodke.ipview.buis.ip.utils.IpV4Util;
 
@@ -75,5 +76,19 @@ public final class DB {
             STATUS.setDbStatus(STATUS.DB_STATUS_CLS);
             ipTable.clear();
         }
+    }
+
+    public static HashMap<String, String> getByIp(String ip) {
+        if (StringUtils.isBlank(ip)) {
+            return new HashMap<String, String>(0);
+        }
+        Iterator<HashMap<String, String>> it = ipTable.iterator();
+        while (it.hasNext()) {
+            HashMap<String, String> info = it.next();
+            if (ip != null && ip.equals(info.get(IP_ADDRESS))) {
+                return info;
+            }
+        }
+        return new HashMap<String, String>(0);
     }
 }
