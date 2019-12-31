@@ -2,7 +2,7 @@ package org.chmodke.ipview.buis.ip.job;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chmodke.ipview.common.core.config.GlobalConfig;
+import org.chmodke.ipview.common.config.AppConfig;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -33,7 +33,7 @@ public class JobListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        waitTime = GlobalConfig.getInteger("timeInterval", 5) * 60;
+        waitTime = AppConfig.getInteger("timeInterval", 5) * 60;
         if (waitTime <= 0) {
             waitTime = DEFAULT_TIME_INTERVAL;
         }

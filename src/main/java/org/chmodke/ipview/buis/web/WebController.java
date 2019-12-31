@@ -4,9 +4,9 @@ import org.chmodke.ipview.buis.ip.DB;
 import org.chmodke.ipview.buis.ip.STATUS;
 import org.chmodke.ipview.buis.ip.job.JobListener;
 import org.chmodke.ipview.buis.ip.job.RefreshIpJob;
-import org.chmodke.ipview.common.core.anno.Controller;
-import org.chmodke.ipview.common.core.anno.RequestMapping;
-import org.chmodke.ipview.common.core.entity.ModelAndView;
+import org.chmodke.mvc.basemvc.core.anno.Controller;
+import org.chmodke.mvc.basemvc.core.anno.RequestMapping;
+import org.chmodke.mvc.basemvc.core.entity.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.chmodke.ipview.buis.ip.DB;
-import org.chmodke.ipview.common.core.anno.Controller;
-import org.chmodke.ipview.common.core.anno.RequestMapping;
+import org.chmodke.mvc.basemvc.core.anno.Controller;
+import org.chmodke.mvc.basemvc.core.anno.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

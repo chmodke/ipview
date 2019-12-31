@@ -1,23 +1,24 @@
-package org.chmodke.ipview.common.core.config;
+package org.chmodke.ipview.common.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chmodke.mvc.basemvc.core.config.MvcConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 /****************************************************************  
- * <p>Filename:    Config.java 
+ * <p>Filename:    AppConfig.java 
  * <p>Description:	 
  * <p>
- * <p>Create at:   2019/10/20 23:48
+ * <p>Create at:   2019/12/31 13:46
  * <p> 
  * <p>Modification History:  
  * <p>Date          Author  Version   Description  
  * <p>------------------------------------------------------------------  
- * <p>2019/10/20    kehao     1.0        
+ * <p>2019/12/31    kehao     1.0        
  * <p>------------------------------------------------------------------
  *
  * @author kehao
@@ -25,11 +26,11 @@ import java.util.Properties;
  * @since
  *******************************************************************/
 
-public class GlobalConfig {
-    private static final Log logger = LogFactory.getLog(GlobalConfig.class);
+public class AppConfig {
+    private static final Log logger = LogFactory.getLog(MvcConfig.class);
     private static Properties global = null;
 
-    private GlobalConfig() {
+    private AppConfig() {
     }
 
     public static void setProperties(String key, String value) {
@@ -78,12 +79,12 @@ public class GlobalConfig {
 
     static {
 
-        InputStream in = GlobalConfig.class.getClassLoader().getResourceAsStream("global.properties");
+        InputStream in = MvcConfig.class.getClassLoader().getResourceAsStream("app.properties");
         global = new Properties();
         try {
             global.load(in);
         } catch (IOException e) {
-            logger.error("GlobalConfig initializer->Exception:", e);
+            logger.error("MvcConfig initializer->Exception:", e);
             System.exit(-1);
         }
     }
