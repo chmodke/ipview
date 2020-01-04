@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
-import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /****************************************************************  
  * <p>Filename:    WebController.java 
@@ -33,6 +34,7 @@ import java.text.DateFormat;
 
 @Controller
 public class WebController {
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @RequestMapping("/index")
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -63,7 +65,7 @@ public class WebController {
             mav = new ModelAndView("list.ftl");
             mav.addObject("ip_list", DB.getIpTable());
             mav.addObject("timeInterval", JobListener.getWaitTime());
-            mav.addObject("nowDate", DateFormat.getDateTimeInstance().format(System.currentTimeMillis()));
+            mav.addObject("nowDate", dtf.format(LocalDateTime.now()));
         } else {
             mav = new ModelAndView("refresh.ftl");
         }

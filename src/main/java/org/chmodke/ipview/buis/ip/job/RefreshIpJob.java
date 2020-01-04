@@ -5,7 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.chmodke.ipview.buis.ip.utils.IpV4Util;
 import org.chmodke.ipview.common.config.AppConfig;
 
-import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.TimerTask;
 import java.util.concurrent.*;
 
@@ -30,6 +31,7 @@ public class RefreshIpJob extends TimerTask {
     private static final Log logger = LogFactory.getLog(RefreshIpJob.class);
     private static RefreshIpJob job = new RefreshIpJob();
     private ThreadPoolExecutor executor = null;
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private RefreshIpJob() {
     }
@@ -64,7 +66,7 @@ public class RefreshIpJob extends TimerTask {
     @Override
     public void run() {
         try {
-            logger.info("RefreshIpJob execut date " + DateFormat.getDateTimeInstance().format(System.currentTimeMillis()));
+            logger.info("RefreshIpJob execut date " + dtf.format(LocalDateTime.now()));
             reFresh(AppConfig.getProperties("startIp"), AppConfig.getInteger("scanLength"));
         } catch (Exception e) {
             logger.error("RefreshIpJob.run->Exception:", e);
