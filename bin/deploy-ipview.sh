@@ -7,7 +7,7 @@ if [ ! -d $IPVIEW_BASE/src ] ; then
 fi
 cd $IPVIEW_BASE/src
 git checkout develop
-git pull origin develop
+git pull --rebase origin develop
 
 mvn -f $IPVIEW_BASE/src/pom.xml clean
 mvn -f $IPVIEW_BASE/src/pom.xml assembly:assembly -Dmaven.test.skip=true
