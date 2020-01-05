@@ -24,6 +24,7 @@ import org.junit.Test;
 public class TestJob {
     @Test
     public void test2() {
+        RefreshIpJob.getInstance().init();
         RefreshIpJob.getInstance().reFresh("192.168.100.123", 2);
         DB.getIpTable().forEach(System.out::println);
     }
