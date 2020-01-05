@@ -4,7 +4,8 @@ import org.chmodke.ipview.buis.BuisConst;
 import org.chmodke.ipview.buis.ip.DB;
 import org.chmodke.ipview.buis.ip.utils.IpV4Util;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 /****************************************************************  
@@ -27,6 +28,7 @@ import java.util.HashMap;
 public class Scan implements Runnable {
     private String ipAddress;
     private int timeout;
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Scan(String ipAddress) {
         this.ipAddress = ipAddress;
@@ -42,7 +44,7 @@ public class Scan implements Runnable {
     public void run() {
         HashMap<String, String> ip = new HashMap<String, String>();
         ip.put(DB.IP_ADDRESS, ipAddress);
-        ip.put("LAST_UP_TIME", BuisConst.formatter.format(Calendar.getInstance().getTime()));
+        ip.put("LAST_UP_TIME", dtf.format(LocalDateTime.now()));
         if (IpV4Util.pingCmd(ipAddress, timeout)) {
             ip.put("STATUS", BuisConst.STATUS_ALIVE);
             ip.put("HOSTNAME", IpV4Util.getHostName(ip.get(DB.IP_ADDRESS)));

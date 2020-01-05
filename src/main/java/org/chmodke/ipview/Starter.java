@@ -4,9 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chmodke.ipview.buis.ip.job.JobListener;
-import org.chmodke.ipview.common.core.DispatcherServlet;
-import org.chmodke.ipview.common.core.config.GlobalConfig;
 import org.chmodke.logo.Logo;
+import org.chmodke.mvc.basemvc.core.DispatcherServlet;
+import org.chmodke.mvc.basemvc.core.config.MvcConfig;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -38,18 +38,26 @@ public class Starter {
     public static void main(String[] args) {
         Logo.print();
 
-        int port = GlobalConfig.getInteger("server.port", 8090);
-        logger.info(String.format("Starter.main,serverPort is:%s", port));
+        int port = MvcConfig.getInteger("server.port", 8090);
+        String serverPort = System.getProperty("server.port");
+        if (StringUtils.isNotBlank(serverPort)) {
+            try {
+                port = Integer.parseInt(serverPort);
+            } catch (NumberFormatException e) {
+                logger.warn(String.format("Starter.main,VM Option [server.port=%s] illegal.", serverPort));
+            }
+        }
+        logger.info(String.format("Starter.main,serverPort use:%s.", port));
 
         try {
             Server server = new Server(port);
 
             ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-            context.setContextPath("/ipview");
+            context.setContextPath(MvcConfig.getProperties("server.context.path","/"));
             context.setResourceBase(Starter.class.getClassLoader().getResource("META-INF/resources").toURI().toString());
 
             //DefaultServlet
-            String staticSuffix = GlobalConfig.getProperties("static.suffix", "*.html|*.js|*.css");
+            String staticSuffix = MvcConfig.getProperties("static.suffix", "*.html|*.js|*.css");
             for (String suffix : staticSuffix.split("\\|")) {
                 if (StringUtils.isBlank(suffix)) {
                     continue;
@@ -71,10 +79,10 @@ public class Starter {
             context.setErrorHandler(error);
 
             ServerConnector connector = server.getBean(ServerConnector.class);
-            connector.setIdleTimeout(GlobalConfig.getInteger("server.timeout", 90000));
+            connector.setIdleTimeout(MvcConfig.getInteger("server.timeout", 90000));
 
             server.start();
-            if (logger.isDebugEnabled() && GlobalConfig.getBoolean("dumpStdErr"))
+            if (logger.isDebugEnabled() && MvcConfig.getBoolean("dumpStdErr"))
                 server.dumpStdErr();
             server.join();
         } catch (Exception e) {

@@ -2,11 +2,11 @@ package org.chmodke.ipview.buis.ip.job;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chmodke.ipview.buis.BuisConst;
 import org.chmodke.ipview.buis.ip.utils.IpV4Util;
-import org.chmodke.ipview.common.core.config.GlobalConfig;
+import org.chmodke.ipview.common.config.AppConfig;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.TimerTask;
 import java.util.concurrent.*;
 
@@ -31,6 +31,7 @@ public class RefreshIpJob extends TimerTask {
     private static final Log logger = LogFactory.getLog(RefreshIpJob.class);
     private static RefreshIpJob job = new RefreshIpJob();
     private ThreadPoolExecutor executor = null;
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private RefreshIpJob() {
     }
@@ -41,7 +42,7 @@ public class RefreshIpJob extends TimerTask {
 
     public void init() {
         int coreSisz = Runtime.getRuntime().availableProcessors();
-        int threadLength = GlobalConfig.getInteger("scanLength");
+        int threadLength = AppConfig.getInteger("scanLength");
         int corePoolSize = threadLength <= coreSisz * 10 ? threadLength : coreSisz * 10;
         int queueSize = (threadLength - corePoolSize) * 5 + threadLength;
         logger.info(String.format("corePoolSize=%s,poolSize=%s,queueSize=%s", corePoolSize, corePoolSize * 2, queueSize));
@@ -56,7 +57,7 @@ public class RefreshIpJob extends TimerTask {
         //poolSize 线程池最大容量
         //queue 核心线程阻塞队列，只服务于核心线程
         //当提交的线程数量总和 - 已执行过的线程 - 核心线程数量 - 阻塞队列长度 > 线程池最大容量时会发生队列溢出
-        
+
         //由于ping扫描的io开销很大，导致cpu利用率极低，开启多线程来提高效率
         executor = new ThreadPoolExecutor(corePoolSize, corePoolSize * 2, 0, TimeUnit.SECONDS, queue, handler);
         //executor.allowCoreThreadTimeOut(true);
@@ -65,8 +66,8 @@ public class RefreshIpJob extends TimerTask {
     @Override
     public void run() {
         try {
-            logger.info("RefreshIpJob execut date " + BuisConst.formatter.format(Calendar.getInstance().getTime()));
-            reFresh(GlobalConfig.getProperties("startIp"), GlobalConfig.getInteger("scanLength"));
+            logger.info("RefreshIpJob execut date " + dtf.format(LocalDateTime.now()));
+            reFresh(AppConfig.getProperties("startIp"), AppConfig.getInteger("scanLength"));
         } catch (Exception e) {
             logger.error("RefreshIpJob.run->Exception:", e);
         }
@@ -78,7 +79,7 @@ public class RefreshIpJob extends TimerTask {
 
         for (int i = 0; i <= length; i++) {
             String ipAddress = IpV4Util.toIpAddress(start + i);
-            Scan scan = new Scan(ipAddress, GlobalConfig.getInteger("pingTimeOut", 1000));
+            Scan scan = new Scan(ipAddress, AppConfig.getInteger("pingTimeOut", 1000));
             executor.execute(scan);
         }
     }

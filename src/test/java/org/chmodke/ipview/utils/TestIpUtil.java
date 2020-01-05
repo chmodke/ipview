@@ -6,7 +6,8 @@ import org.chmodke.ipview.buis.ip.utils.IpV4Util;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 /****************************************************************  
@@ -27,6 +28,7 @@ import java.util.HashMap;
  *******************************************************************/
 
 public class TestIpUtil {
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     @Test
     public void test() {
         int a = IpV4Util.toInt("10.135.125.148");
@@ -71,7 +73,7 @@ public class TestIpUtil {
         String ipAddress = IpV4Util.toIpAddress(start);
         HashMap<String, String> ip = new HashMap<String, String>();
         ip.put(DB.IP_ADDRESS, ipAddress);
-        ip.put("LAST_UP_TIME", BuisConst.formatter.format(Calendar.getInstance().getTime()));
+        ip.put("LAST_UP_TIME", dtf.format(LocalDateTime.now()));
         long t2 = System.currentTimeMillis();
         System.out.println(t2);
         boolean a = IpV4Util.pingCmd(ipAddress, 500);

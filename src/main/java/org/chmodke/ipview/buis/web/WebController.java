@@ -1,19 +1,19 @@
 package org.chmodke.ipview.buis.web;
 
-import org.chmodke.ipview.buis.BuisConst;
 import org.chmodke.ipview.buis.ip.DB;
 import org.chmodke.ipview.buis.ip.STATUS;
 import org.chmodke.ipview.buis.ip.job.JobListener;
 import org.chmodke.ipview.buis.ip.job.RefreshIpJob;
-import org.chmodke.ipview.common.core.anno.Controller;
-import org.chmodke.ipview.common.core.anno.RequestMapping;
-import org.chmodke.ipview.common.core.entity.ModelAndView;
+import org.chmodke.mvc.basemvc.core.anno.Controller;
+import org.chmodke.mvc.basemvc.core.anno.RequestMapping;
+import org.chmodke.mvc.basemvc.core.entity.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /****************************************************************  
  * <p>Filename:    WebController.java 
@@ -34,6 +34,7 @@ import java.util.Calendar;
 
 @Controller
 public class WebController {
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @RequestMapping("/index")
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -64,7 +65,7 @@ public class WebController {
             mav = new ModelAndView("list.ftl");
             mav.addObject("ip_list", DB.getIpTable());
             mav.addObject("timeInterval", JobListener.getWaitTime());
-            mav.addObject("nowDate", BuisConst.formatter.format(Calendar.getInstance().getTime()));
+            mav.addObject("nowDate", dtf.format(LocalDateTime.now()));
         } else {
             mav = new ModelAndView("refresh.ftl");
         }

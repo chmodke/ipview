@@ -18,6 +18,8 @@
         <log4j.version>1.2.17</log4j.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <jackson.version>2.10.1</jackson.version>
+        <logo.version>1.0</logo.version>
+        <basemvc.version>1.0</basemvc.version>
     </properties>
 
     <dependencies>
@@ -31,7 +33,13 @@
         <dependency>
             <groupId>org.chmodke</groupId>
             <artifactId>logo</artifactId>
-            <version>LATEST</version>
+            <version>${logo.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.chmodke.mvc</groupId>
+            <artifactId>basemvc</artifactId>
+            <version>${basemvc.version}</version>
         </dependency>
 
 
@@ -46,30 +54,6 @@
             <artifactId>jetty-servlet</artifactId>
             <version>${jetty.version}</version>
         </dependency>
-
-        <!--freemarker-->
-        <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>${freemarker.version}</version>
-        </dependency>
-
-        <!--jackson-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
-<!--            <artifactId>jackson-annotations</artifactId>-->
-<!--            <version>${jackson.version}</version>-->
-<!--        </dependency>-->
 
         <!--log-->
         <dependency>

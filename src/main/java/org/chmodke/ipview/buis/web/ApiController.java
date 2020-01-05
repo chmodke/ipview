@@ -2,14 +2,13 @@ package org.chmodke.ipview.buis.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.chmodke.ipview.common.core.anno.Controller;
-import org.chmodke.ipview.common.core.anno.RequestMapping;
-import org.chmodke.ipview.common.core.anno.RespJson;
+import org.apache.commons.lang3.StringUtils;
+import org.chmodke.ipview.buis.ip.DB;
+import org.chmodke.mvc.basemvc.core.anno.Controller;
+import org.chmodke.mvc.basemvc.core.anno.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.List;
 
 /****************************************************************  
  * <p>Filename:    ApiController.java 
@@ -32,48 +31,16 @@ import java.util.List;
 @RequestMapping("/api")
 public class ApiController {
 
-    @RequestMapping("/getJsonStr")
-    public String getJsonStr(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+    @RequestMapping("/getIpList")
+    public String getIpList(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(Arrays.asList(1, 2, 3));
+        String qryIp = request.getParameter("IP");
+        String json = "{}";
+        if (StringUtils.isNotBlank(qryIp)) {
+            json = mapper.writeValueAsString(DB.getByIp(qryIp));
+        } else {
+            json = mapper.writeValueAsString(DB.getIpTable());
+        }
         return json;
-    }
-
-    @RequestMapping("/getJson")
-    @RespJson
-    public List getJson(HttpServletRequest request, HttpServletResponse response) {
-        return Arrays.asList(1, 2, 3);
-    }
-
-    @RequestMapping("/getPerson")
-    @RespJson
-    public Person getPerson(HttpServletRequest request, HttpServletResponse response) {
-        return new Person("qwe", "23");
-    }
-}
-
-class Person {
-    private String name;
-    private String age;
-
-    public Person(String name, String age) {
-        this.name = name;
-        this.age = age;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAge() {
-        return age;
-    }
-
-    public void setAge(String age) {
-        this.age = age;
     }
 }
