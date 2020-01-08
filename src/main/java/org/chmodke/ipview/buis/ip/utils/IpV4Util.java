@@ -1,8 +1,8 @@
 package org.chmodke.ipview.buis.ip.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  *******************************************************************/
 
 public class IpV4Util {
-    private static final Log logger = LogFactory.getLog(IpV4Util.class);
+    private static final Logger logger = LoggerFactory.getLogger(IpV4Util.class);
     /**
      * ip对应的正则表达式
      */
@@ -92,7 +92,7 @@ public class IpV4Util {
 
     public static boolean ping(String ipAddress, int timeout) {
         if (logger.isDebugEnabled())
-            logger.debug(String.format("send ping to %s,timeout is %s", ipAddress, timeout));
+            logger.debug("send ping to {},timeout is {}", ipAddress, timeout);
         try {
             InetAddress inet = InetAddress.getByName(ipAddress);
             return (null != inet && inet.isReachable(timeout))
@@ -122,11 +122,11 @@ public class IpV4Util {
         }
         try {
             if (logger.isDebugEnabled())
-                logger.debug(String.format("IpV4Util.pingCmd->cmd:%s", cmdCfg[2]));
+                logger.debug("IpV4Util.pingCmd->cmd:{}", cmdCfg[2]);
             Process process = Runtime.getRuntime().exec(cmdCfg);
             int retVal = process.waitFor();
             if (logger.isDebugEnabled())
-                logger.debug(String.format("IpV4Util.pingCmd resp->ip %s: retVal:%s", ipAddress, retVal));
+                logger.debug("IpV4Util.pingCmd resp->ip {}: retVal:{}", ipAddress, retVal);
             return retVal == 0 ? true : false;
         } catch (IOException e) {
             return false;
@@ -141,7 +141,7 @@ public class IpV4Util {
 
     public static String getHostName(String ipAddress) {
         if (logger.isDebugEnabled())
-            logger.debug(String.format("get hostname %s", ipAddress));
+            logger.debug("get hostname {}", ipAddress);
         try {
             InetAddress inet = InetAddress.getByName(ipAddress);
             String hostname = inet.getHostName();
@@ -156,7 +156,7 @@ public class IpV4Util {
 
     public static String getCanonicalHostName(String ipAddress) {
         if (logger.isDebugEnabled())
-            logger.debug(String.format("get hostname %s", ipAddress));
+            logger.debug("get hostname {}", ipAddress);
         try {
             InetAddress inet = InetAddress.getByName(ipAddress);
             return inet.getCanonicalHostName();
@@ -167,7 +167,7 @@ public class IpV4Util {
 
     public static String getHostNameCmd(String ipAddress) {
         if (logger.isDebugEnabled())
-            logger.debug(String.format("get hostname cmd %s", ipAddress));
+            logger.debug("get hostname cmd {}", ipAddress);
         String hostname = "UnknownHost";
         String[] cmdCfg = null;
 
@@ -184,7 +184,7 @@ public class IpV4Util {
         BufferedReader bufferedreader = null;
         try {
             if (logger.isDebugEnabled())
-                logger.debug(String.format("IpV4Util.getHostNameCmd->cmd:%s", cmdCfg[2]));
+                logger.debug("IpV4Util.getHostNameCmd->cmd:{}", cmdCfg[2]);
             Process process = Runtime.getRuntime().exec(cmdCfg, null);
             process.waitFor(5, TimeUnit.SECONDS);
             bufferedreader = new BufferedReader(new InputStreamReader(process.getInputStream(), OSUtils.osCharset));
@@ -201,22 +201,22 @@ public class IpV4Util {
                 }
             }
         } catch (IOException e) {
-            logger.warn(String.format("get host :%s timeout", ipAddress));
+            logger.warn("get host :{} timeout", ipAddress);
         } catch (InterruptedException e) {
             //不会发生
         } catch (Exception e) {
-            logger.error(String.format("IpV4Util.getHostNameCmd->ip: %s Exception:%s", ipAddress, e));
+            logger.error("IpV4Util.getHostNameCmd->ip: {} Exception:{}", ipAddress, e);
         } finally {
             try {
                 if (null != bufferedreader) {
                     bufferedreader.close();
                 }
             } catch (IOException e) {
-                logger.error(String.format("close bufferedreader fail :s", ipAddress));
+                logger.error("close bufferedreader fail :{}", ipAddress);
             }
         }
         if (logger.isDebugEnabled())
-            logger.debug(String.format("IpV4Util.getHostNameCmd resp->ip %s: hostname:%s", ipAddress, hostname));
+            logger.debug("IpV4Util.getHostNameCmd resp->ip {}: hostname:{}", ipAddress, hostname);
         return hostname;
     }
 }

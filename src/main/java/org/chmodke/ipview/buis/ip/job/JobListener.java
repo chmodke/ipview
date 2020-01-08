@@ -1,8 +1,8 @@
 package org.chmodke.ipview.buis.ip.job;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.chmodke.ipview.common.config.AppConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -27,7 +27,7 @@ import java.util.Timer;
  *******************************************************************/
 
 public class JobListener implements ServletContextListener {
-    private static final Log logger = LogFactory.getLog(JobListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobListener.class);
     private static final int DEFAULT_TIME_INTERVAL = 5 * 60;//秒
     private static int waitTime = 0;//秒
 
@@ -37,7 +37,7 @@ public class JobListener implements ServletContextListener {
         if (waitTime <= 0) {
             waitTime = DEFAULT_TIME_INTERVAL;
         }
-        logger.info(String.format("JobListener.contextInitialized,timeInterval is:%sms", waitTime));
+        logger.info("JobListener.contextInitialized,timeInterval is:{}ms", waitTime);
 
         Timer timer = new Timer();
         RefreshIpJob job = RefreshIpJob.getInstance();

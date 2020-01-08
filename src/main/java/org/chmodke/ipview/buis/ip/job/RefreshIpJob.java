@@ -1,9 +1,9 @@
 package org.chmodke.ipview.buis.ip.job;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.chmodke.ipview.buis.ip.utils.IpV4Util;
 import org.chmodke.ipview.common.config.AppConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +28,7 @@ import java.util.concurrent.*;
  *******************************************************************/
 
 public class RefreshIpJob extends TimerTask {
-    private static final Log logger = LogFactory.getLog(RefreshIpJob.class);
+    private static final Logger logger = LoggerFactory.getLogger(RefreshIpJob.class);
     private static RefreshIpJob job = new RefreshIpJob();
     private ThreadPoolExecutor executor = null;
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -45,13 +45,13 @@ public class RefreshIpJob extends TimerTask {
         int threadLength = AppConfig.getInteger("scanLength");
         int corePoolSize = threadLength <= coreSisz * 10 ? threadLength : coreSisz * 10;
         int queueSize = (threadLength - corePoolSize) * 5 + threadLength;
-        logger.info(String.format("corePoolSize=%s,poolSize=%s,queueSize=%s", corePoolSize, corePoolSize * 2, queueSize));
+        logger.info("corePoolSize={},poolSize={},queueSize={}", corePoolSize, corePoolSize * 2, queueSize);
         BlockingQueue queue = new LinkedBlockingQueue(queueSize);
         PingThreadFactory threadFactory = new PingThreadFactory();
         RejectedExecutionHandler handler = new RejectedExecutionHandler() {
             @Override
             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                logger.error(String.format("线程溢出 %s", r.toString()));
+                logger.error("线程溢出 {}", r);
             }
         };
         //corePoolSize 核心线程数量
@@ -67,7 +67,7 @@ public class RefreshIpJob extends TimerTask {
     @Override
     public void run() {
         try {
-            logger.info("RefreshIpJob execut date " + dtf.format(LocalDateTime.now()));
+            logger.info("RefreshIpJob execut date {}", dtf.format(LocalDateTime.now()));
             reFresh(AppConfig.getProperties("startIp"), AppConfig.getInteger("scanLength"));
         } catch (Exception e) {
             logger.error("RefreshIpJob.run->Exception:", e);

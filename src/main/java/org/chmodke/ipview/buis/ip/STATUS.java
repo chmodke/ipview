@@ -1,7 +1,7 @@
 package org.chmodke.ipview.buis.ip;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /****************************************************************  
  * <p>Filename:    STATUS.java 
@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
  *******************************************************************/
 
 public class STATUS {
-    private static final Log logger = LogFactory.getLog(STATUS.class);
+    private static final Logger logger = LoggerFactory.getLogger(STATUS.class);
     public static int DB_STATUS_INIT = 0;
     public static int DB_STATUS_CLS = 1;
     public static int DB_STATUS_UPD = 2;
@@ -36,7 +36,7 @@ public class STATUS {
 
     public synchronized static void setDbStatus(int dbStatus) {
         STATUS.dbStatus = dbStatus;
-        if(logger.isDebugEnabled())
-            logger.debug(String.format("STATUS.setDbStatus->dbStatus:%s", dbStatus));
+        if (logger.isDebugEnabled())
+            logger.debug("STATUS.setDbStatus->dbStatus:{}", dbStatus);
     }
 }

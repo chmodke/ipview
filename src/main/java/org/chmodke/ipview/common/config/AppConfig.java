@@ -1,9 +1,9 @@
 package org.chmodke.ipview.common.config;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.chmodke.mvc.basemvc.core.config.MvcConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +27,7 @@ import java.util.Properties;
  *******************************************************************/
 
 public class AppConfig {
-    private static final Log logger = LogFactory.getLog(MvcConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
     private static Properties global = null;
 
     private AppConfig() {
@@ -58,7 +58,7 @@ public class AppConfig {
         try {
             return Integer.parseInt(getProperties(key));
         } catch (Exception e) {
-            logger.warn(String.format("get %s fail,use default value :%s", key, def));
+            logger.warn("get {} fail,use default value :{}", key, def);
             return def;
         }
     }
@@ -71,7 +71,7 @@ public class AppConfig {
         try {
             return Boolean.parseBoolean(getProperties(key));
         } catch (Exception e) {
-            logger.warn(String.format("get %s fail,use default value :%s", key, def));
+            logger.warn("get {} fail,use default value :{}", key, def);
             return def;
         }
     }

@@ -1,8 +1,6 @@
 package org.chmodke.ipview;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.chmodke.ipview.buis.ip.job.JobListener;
 import org.chmodke.logo.Logo;
 import org.chmodke.mvc.basemvc.core.DispatcherServlet;
@@ -12,6 +10,8 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 
@@ -33,7 +33,7 @@ import javax.servlet.ServletException;
  *******************************************************************/
 
 public class Starter {
-    private static Log logger = LogFactory.getLog(Starter.class);
+    private static final Logger logger = LoggerFactory.getLogger(Starter.class);
 
     public static void main(String[] args) {
         Logo.print();
@@ -44,16 +44,16 @@ public class Starter {
             try {
                 port = Integer.parseInt(serverPort);
             } catch (NumberFormatException e) {
-                logger.warn(String.format("Starter.main,VM Option [server.port=%s] illegal.", serverPort));
+                logger.warn("Starter.main,VM Option [server.port={}] illegal.", serverPort);
             }
         }
-        logger.info(String.format("Starter.main,serverPort use:%s.", port));
+        logger.info("Starter.main,serverPort use:{}.", port);
 
         try {
             Server server = new Server(port);
 
             ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-            context.setContextPath(MvcConfig.getProperties("server.context.path","/"));
+            context.setContextPath(MvcConfig.getProperties("server.context.path", "/"));
             context.setResourceBase(Starter.class.getClassLoader().getResource("META-INF/resources").toURI().toString());
 
             //DefaultServlet
@@ -62,7 +62,7 @@ public class Starter {
                 if (StringUtils.isBlank(suffix)) {
                     continue;
                 }
-                logger.info(String.format("DefaultServlet apply to %s", suffix));
+                logger.info("DefaultServlet apply to {}", suffix);
                 context.addServlet(DefaultServlet.class, suffix);
             }
 
