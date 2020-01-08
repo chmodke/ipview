@@ -47,6 +47,7 @@ public class RefreshIpJob extends TimerTask {
         int queueSize = (threadLength - corePoolSize) * 5 + threadLength;
         logger.info(String.format("corePoolSize=%s,poolSize=%s,queueSize=%s", corePoolSize, corePoolSize * 2, queueSize));
         BlockingQueue queue = new LinkedBlockingQueue(queueSize);
+        PingThreadFactory threadFactory = new PingThreadFactory();
         RejectedExecutionHandler handler = new RejectedExecutionHandler() {
             @Override
             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
@@ -59,7 +60,7 @@ public class RefreshIpJob extends TimerTask {
         //当提交的线程数量总和 - 已执行过的线程 - 核心线程数量 - 阻塞队列长度 > 线程池最大容量时会发生队列溢出
 
         //由于ping扫描的io开销很大，导致cpu利用率极低，开启多线程来提高效率
-        executor = new ThreadPoolExecutor(corePoolSize, corePoolSize * 2, 0, TimeUnit.SECONDS, queue, handler);
+        executor = new ThreadPoolExecutor(corePoolSize, corePoolSize * 2, 0, TimeUnit.SECONDS, queue, threadFactory, handler);
         //executor.allowCoreThreadTimeOut(true);
     }
 
