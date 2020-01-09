@@ -60,16 +60,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!--tools-->
@@ -123,7 +120,7 @@
                 <targetPath>${project.build.directory}/classes</targetPath>
                 <directory>src/main/resources</directory>
 
-<!--                <filtering>true</filtering>-->
+                <!--                <filtering>true</filtering>-->
                 <includes>
                     <include>META-INF/**</include>
                     <include>**/*.xml</include>
