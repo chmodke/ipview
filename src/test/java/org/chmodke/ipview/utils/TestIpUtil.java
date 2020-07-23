@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 public class TestIpUtil {
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Test
     public void test() {
         int a = IpV4Util.toInt("10.135.125.148");
@@ -113,5 +114,10 @@ public class TestIpUtil {
     public void test6() {
         System.out.println(IpV4Util.getHostName("192.168.100.1"));
         System.out.println(IpV4Util.getHostNameCmd("192.168.100.1"));
+    }
+
+    @Test
+    public void arpTest() {
+        System.out.println(IpV4Util.arpCmd("10.135.125.148"));
     }
 }

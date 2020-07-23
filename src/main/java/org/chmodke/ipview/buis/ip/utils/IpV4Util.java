@@ -1,5 +1,6 @@
 package org.chmodke.ipview.buis.ip.utils;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -219,6 +221,40 @@ public class IpV4Util {
             logger.debug("IpV4Util.getHostNameCmd resp->ip {}: hostname:{}", ipAddress, hostname);
         return hostname;
     }
+
+    public static String arpCmd(String ipAddress) {
+        String[] cmdCfg = null;
+        Charset charset = Charset.defaultCharset();
+        if (OSUtils.WINDOWS) {
+            String cmd = String.format("arp -A %s ", ipAddress);
+            cmdCfg = new String[]{"cmd", "/c", cmd};
+            charset = Charset.forName("GBK");
+        } else if (OSUtils.LINUX) {
+            String cmd = String.format("arp -a %s | awk '{ print $4 }'", ipAddress);
+            cmdCfg = new String[]{"/bin/bash", "-c", cmd};
+            charset = Charset.forName("UTF-8");
+        }
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug("IpV4Util.arpCmd->cmd:{}", cmdCfg[2]);
+            Process process = Runtime.getRuntime().exec(cmdCfg);
+            int retVal = process.waitFor();
+            if (0 == retVal) {
+                String mac = IOUtils.readLines(process.getInputStream(), charset).get(0);
+                if (logger.isDebugEnabled())
+                    logger.debug("IpV4Util.arpCmd resp->ip {}: retVal:{}", ipAddress, mac);
+                return mac.toUpperCase();
+            } else {
+                return "";
+            }
+
+        } catch (IOException e) {
+            return "";
+        } catch (InterruptedException e) {
+            return "";
+        }
+    }
+
 }
 
 class IntToByteArray {

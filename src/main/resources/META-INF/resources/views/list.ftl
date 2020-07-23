@@ -57,6 +57,7 @@
             <th>STATUS</th>
             <th>LAST_SCANNED_TIME</th>
             <th>HOSTNAME</th>
+            <th>MAC</th>
         </tr>
         </thead>
         <tbody>
@@ -76,6 +77,7 @@
                 </#if>
                 <td>${ip.LAST_UP_TIME} </td>
                 <td>${ip.HOSTNAME} </td>
+                <td>${ip.MAC} </td>
             </tr>
         </#list>
         </tbody>

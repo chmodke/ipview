@@ -48,9 +48,11 @@ public class Scan implements Runnable {
         if (IpV4Util.pingCmd(ipAddress, timeout)) {
             ip.put("STATUS", BuisConst.STATUS_ALIVE);
             ip.put("HOSTNAME", IpV4Util.getHostName(ip.get(DB.IP_ADDRESS)));
+            ip.put("MAC", IpV4Util.arpCmd(ip.get(DB.IP_ADDRESS)));
         } else {
             ip.put("STATUS", BuisConst.STATUS_DEAD);
             ip.put("HOSTNAME", "N/A");
+            ip.put("MAC", "N/A");
         }
         DB.updateIpTable(ip);
     }
