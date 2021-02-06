@@ -1,7 +1,6 @@
 package org.chmodke.ipview.common.config;
 
 import org.apache.commons.lang3.StringUtils;
-import org.chmodke.mvc.basemvc.core.config.MvcConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +78,7 @@ public class AppConfig {
 
     static {
 
-        InputStream in = MvcConfig.class.getClassLoader().getResourceAsStream("app.properties");
+        InputStream in = AppConfig.class.getClassLoader().getResourceAsStream("app.properties");
         global = new Properties();
         try {
             global.load(in);

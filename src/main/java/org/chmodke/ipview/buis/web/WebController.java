@@ -1,19 +1,21 @@
 package org.chmodke.ipview.buis.web;
 
+import io.netty.handler.codec.http.FullHttpRequest;
 import org.chmodke.ipview.buis.ip.DB;
 import org.chmodke.ipview.buis.ip.STATUS;
 import org.chmodke.ipview.buis.ip.job.JobListener;
 import org.chmodke.ipview.buis.ip.job.RefreshIpJob;
-import org.chmodke.mvc.basemvc.core.anno.Controller;
-import org.chmodke.mvc.basemvc.core.anno.RequestMapping;
-import org.chmodke.mvc.basemvc.core.entity.ModelAndView;
+import org.chmodke.mvc.core.anno.Controller;
+import org.chmodke.mvc.core.anno.RequestMapping;
+import org.chmodke.mvc.core.entity.ModelAndView;
+import org.chmodke.mvc.netty.RequestParser;
+import org.chmodke.mvc.netty.exception.MethodNotSupportedException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 /****************************************************************  
  * <p>Filename:    WebController.java 
@@ -37,19 +39,19 @@ public class WebController {
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @RequestMapping("/index")
-    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView index(FullHttpRequest request) throws IOException {
         ModelAndView mav = new ModelAndView("index.ftl");
         mav.addObject("name", "欢迎访问!");
         return mav;
     }
 
     @RequestMapping("/")
-    public ModelAndView root(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        return list(request, response);
+    public ModelAndView root(FullHttpRequest request) throws IOException {
+        return list(request);
     }
 
     @RequestMapping("/refresh")
-    public ModelAndView refresh(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView refresh(FullHttpRequest request) throws IOException {
         ModelAndView mav = new ModelAndView("refresh.ftl");
         if (STATUS.DB_STATUS_OK == STATUS.getDbStatus()) {
             RefreshIpJob.getInstance().run();
@@ -59,7 +61,7 @@ public class WebController {
 
 
     @RequestMapping("/list")
-    public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView list(FullHttpRequest request) throws IOException {
         ModelAndView mav = null;
         if (STATUS.DB_STATUS_OK == STATUS.getDbStatus()) {
             mav = new ModelAndView("list.ftl");
@@ -73,8 +75,9 @@ public class WebController {
     }
 
     @RequestMapping("/getmd")
-    public String getmd(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String mdid = request.getParameter("mdid");
+    public String getmd(FullHttpRequest request) throws IOException, MethodNotSupportedException {
+        Map<String, String> paramMap = RequestParser.parse(request);
+        String mdid = paramMap.get("mdid");
         StringBuffer mdContext = new StringBuffer();
         URL mdPath = WebController.class.getClassLoader().getResource("META-INF/resources/md/" + mdid);
         File mdFile = new File(mdPath.getPath());
@@ -99,7 +102,7 @@ public class WebController {
     }
 
     @RequestMapping("/error")
-    public ModelAndView error(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView error(FullHttpRequest request) throws IOException {
         ModelAndView mav = new ModelAndView("error.ftl");
         mav.addObject("name", "欢迎进入首页!");
         return mav;

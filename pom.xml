@@ -12,14 +12,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
-        <jetty.version>9.4.22.v20191022</jetty.version>
-        <freemarker.version>2.3.29</freemarker.version>
         <slf4j.version>1.7.25</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <jackson.version>2.10.1</jackson.version>
         <logo.version>1.0</logo.version>
-        <basemvc.version>1.0</basemvc.version>
+        <mvc.version>1.0</mvc.version>
+        <netty.version>4.1.52.Final</netty.version>
     </properties>
 
     <dependencies>
@@ -38,21 +37,8 @@
 
         <dependency>
             <groupId>org.chmodke.mvc</groupId>
-            <artifactId>basemvc</artifactId>
-            <version>${basemvc.version}</version>
-        </dependency>
-
-
-        <!--jetty-->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>${jetty.version}</version>
+            <artifactId>mvc-netty</artifactId>
+            <version>${mvc.version}</version>
         </dependency>
 
         <!--log-->
@@ -74,6 +60,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
         </dependency>
 
 

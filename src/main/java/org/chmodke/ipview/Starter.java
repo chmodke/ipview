@@ -1,19 +1,21 @@
 package org.chmodke.ipview;
 
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.chmodke.ipview.buis.ip.job.JobListener;
+import org.chmodke.ipview.http.HttpServerInitializer;
 import org.chmodke.logo.Logo;
-import org.chmodke.mvc.basemvc.core.DispatcherServlet;
-import org.chmodke.mvc.basemvc.core.config.MvcConfig;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.chmodke.mvc.core.config.MvcConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
+import java.net.InetSocketAddress;
 
 /****************************************************************  
  * <p>Filename:    Start.java 
@@ -34,6 +36,7 @@ import javax.servlet.ServletException;
 
 public class Starter {
     private static final Logger logger = LoggerFactory.getLogger(Starter.class);
+    private static Thread deamon;
 
     public static void main(String[] args) {
         Logo.print();
@@ -50,43 +53,34 @@ public class Starter {
         logger.info("Starter.main,serverPort use:{}.", port);
 
         try {
-            Server server = new Server(port);
-
-            ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-            context.setContextPath(MvcConfig.getProperties("server.context.path", "/"));
-            context.setResourceBase(Starter.class.getClassLoader().getResource("META-INF/resources").toURI().toString());
-
-            //DefaultServlet
-            String staticSuffix = MvcConfig.getProperties("static.suffix", "*.html|*.js|*.css");
-            for (String suffix : staticSuffix.split("\\|")) {
-                if (StringUtils.isBlank(suffix)) {
-                    continue;
-                }
-                logger.info("DefaultServlet apply to {}", suffix);
-                context.addServlet(DefaultServlet.class, suffix);
-            }
-
-            //DispatcherServlet
-            context.addServlet(DispatcherServlet.class, "/");
-
-            //EventListener
-            context.addEventListener(new JobListener());
-
-            server.setHandler(context);
-
-            ErrorPageErrorHandler error = new ErrorPageErrorHandler();
-            error.addErrorPage(ServletException.class, "/error");
-            context.setErrorHandler(error);
-
-            ServerConnector connector = server.getBean(ServerConnector.class);
-            connector.setIdleTimeout(MvcConfig.getInteger("server.timeout", 90000));
-
-            server.start();
-            if (logger.isDebugEnabled() && MvcConfig.getBoolean("dumpStdErr"))
-                server.dumpStdErr();
-            server.join();
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            EventLoopGroup boss = new NioEventLoopGroup();
+            EventLoopGroup work = new NioEventLoopGroup();
+            bootstrap.group(boss, work)
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new HttpServerInitializer());
+            ChannelFuture f = bootstrap.bind(new InetSocketAddress(port)).sync();
+            logger.info("Starter.main,finshed http://{}:{}{}.", "127.0.0.1", port,
+                    MvcConfig.getProperties("server.context.path", "/"));
+            initialize();
+            f.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void initialize() {
+        deamon = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                JobListener job = new JobListener();
+                job.contextInitialized();
+                logger.info("Starter.initialize,ScanJob was notified");
+                deamon.interrupt();
+            }
+        }, "Start_Deamon");
+        deamon.start();
     }
 }

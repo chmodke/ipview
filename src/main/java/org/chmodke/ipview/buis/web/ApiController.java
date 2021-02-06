@@ -1,14 +1,16 @@
 package org.chmodke.ipview.buis.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.handler.codec.http.FullHttpRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.chmodke.ipview.buis.ip.DB;
-import org.chmodke.mvc.basemvc.core.anno.Controller;
-import org.chmodke.mvc.basemvc.core.anno.RequestMapping;
+import org.chmodke.mvc.core.anno.Controller;
+import org.chmodke.mvc.core.anno.RequestMapping;
+import org.chmodke.mvc.core.anno.RespJson;
+import org.chmodke.mvc.netty.RequestParser;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Map;
 
 /****************************************************************  
  * <p>Filename:    ApiController.java 
@@ -32,9 +34,11 @@ import javax.servlet.http.HttpServletResponse;
 public class ApiController {
 
     @RequestMapping("/getIpList")
-    public String getIpList(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+    @RespJson
+    public String getIpList(FullHttpRequest request) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        String qryIp = request.getParameter("IP");
+        Map<String, String> paramMap = RequestParser.parse(request);
+        String qryIp = paramMap.get("IP");
         String json = "{}";
         if (StringUtils.isNotBlank(qryIp)) {
             json = mapper.writeValueAsString(DB.getByIp(qryIp));

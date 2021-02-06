@@ -4,8 +4,6 @@ import org.chmodke.ipview.common.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import java.util.Date;
 import java.util.Timer;
 
@@ -26,13 +24,12 @@ import java.util.Timer;
  * @since
  *******************************************************************/
 
-public class JobListener implements ServletContextListener {
+public class JobListener {
     private static final Logger logger = LoggerFactory.getLogger(JobListener.class);
     private static final int DEFAULT_TIME_INTERVAL = 5 * 60;//秒
     private static int waitTime = 0;//秒
 
-    @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
+    public void contextInitialized() {
         waitTime = AppConfig.getInteger("timeInterval", 5) * 60;
         if (waitTime <= 0) {
             waitTime = DEFAULT_TIME_INTERVAL;
@@ -43,11 +40,6 @@ public class JobListener implements ServletContextListener {
         RefreshIpJob job = RefreshIpJob.getInstance();
         job.init();
         timer.schedule(job, new Date(), waitTime * 1000);
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-
     }
 
     public static int getWaitTime() {
