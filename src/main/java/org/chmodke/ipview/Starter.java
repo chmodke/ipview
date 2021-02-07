@@ -9,9 +9,9 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.chmodke.ipview.buis.ip.job.JobListener;
-import org.chmodke.ipview.http.HttpServerInitializer;
 import org.chmodke.logo.Logo;
 import org.chmodke.mvc.core.config.MvcConfig;
+import org.chmodke.mvc.netty.http.HttpServerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

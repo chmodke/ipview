@@ -8,8 +8,8 @@ import org.chmodke.ipview.buis.ip.job.RefreshIpJob;
 import org.chmodke.mvc.core.anno.Controller;
 import org.chmodke.mvc.core.anno.RequestMapping;
 import org.chmodke.mvc.core.entity.ModelAndView;
-import org.chmodke.mvc.netty.RequestParser;
 import org.chmodke.mvc.netty.exception.MethodNotSupportedException;
+import org.chmodke.mvc.netty.handler.RequestParser;
 
 import java.io.*;
 import java.net.URL;
